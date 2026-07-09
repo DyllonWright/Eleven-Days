@@ -1,0 +1,502 @@
+/* ==========================================================================
+   🌌 Eleven Days — calendar dashboard stylesheet
+   ========================================================================== */
+
+/* 1. Containers & Layout Hierarchy */
+.multi-calendar-featured-wrapper {
+    width: 100% !important;
+    margin: 10px 0 8px 0 !important;
+    display: block !important;
+}
+
+/* Secondary grid of 10 calendars below */
+.multi-calendar-subgrid {
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr) !important; /* Forces exactly 5 equal columns for perfect 5x2 row alignment */
+    gap: 8px !important;
+    width: 100% !important;
+    margin: 0 0 14px 0 !important;
+}
+
+/* Responsive adjustment: drop to 2 columns on very narrow screens/panels */
+@media (max-width: 680px) {
+    .multi-calendar-subgrid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* 2. Glassmorphic Card Design */
+.multi-calendar-card {
+    background-color: rgba(8, 10, 20, 0.45) !important;
+    border: 1px solid #13172e !important;
+    border-radius: 6px !important;
+    padding: 8px 6px !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    min-height: 85px !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* 3. Featured Card Styling (Gregorian Card on top) */
+.multi-calendar-card.featured-card {
+    background-color: rgba(0, 180, 216, 0.04) !important;
+    border: 1px dashed rgba(0, 180, 216, 0.3) !important;
+    min-height: 52px !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 8px 16px !important;
+    margin-bottom: 2px !important;
+    cursor: pointer !important;
+    position: relative !important;
+}
+
+/* Container for standard Gregorian elements */
+.greg-default-content {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr !important;
+    grid-template-areas: "left center right" !important;
+    grid-template-rows: auto !important;
+    align-items: center !important;
+    width: 100% !important;
+}
+
+/* Morphing default content when holiday is present */
+.multi-calendar-card.featured-card.has-holiday .greg-default-content {
+    grid-template-areas: 
+        "left center right"
+        "holiday holiday holiday" !important;
+    grid-template-rows: auto auto !important;
+    row-gap: 6px !important;
+}
+
+.featured-left {
+    grid-area: left !important;
+    text-align: left !important;
+    font-size: 0.8em !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    color: var(--text-muted) !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.featured-center {
+    grid-area: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 12px !important;
+}
+
+.featured-right {
+    grid-area: right !important;
+    text-align: right !important;
+    font-size: 0.95em !important;
+    color: var(--text-muted) !important;
+    font-family: 'Cambria', serif !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+}
+
+.featured-year {
+    font-size: 0.95em !important;
+    font-weight: 700 !important;
+    color: var(--text-normal) !important;
+    line-height: 1.1 !important;
+}
+
+.featured-week {
+    margin-top: 2px !important;
+    font-size: 0.82em !important;
+    line-height: 1.1 !important;
+}
+
+.featured-holiday-row {
+    grid-area: holiday !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+}
+
+.multi-calendar-card.featured-card:hover {
+    background-color: rgba(0, 180, 216, 0.07) !important;
+    border-color: rgba(0, 180, 216, 0.6) !important;
+    box-shadow: 0 0 10px 1px rgba(0, 180, 216, 0.15) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Hover micro-animations on subgrid cards */
+.multi-calendar-card:not(.featured-card):hover {
+    transform: translateY(-2px) !important;
+    border-color: var(--card-hover-border, rgba(0, 180, 216, 0.4)) !important;
+    background-color: rgba(8, 10, 20, 0.6) !important;
+    box-shadow: 0 0 8px 1px var(--card-hover-glow, rgba(0, 180, 216, 0.15)), 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Highlight style for active card selection */
+.multi-calendar-card.active-card-info {
+    transform: translateY(-2px) !important;
+    border-color: var(--card-hover-border) !important;
+    background-color: rgba(8, 10, 20, 0.65) !important;
+    box-shadow: 0 0 10px 2px var(--card-hover-glow), 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* 4. Interactive Navigation Elements */
+
+/* Navigation Arrows */
+.nav-arrow-left,
+.nav-arrow-right {
+    font-size: 1.6em !important;
+    color: var(--text-muted) !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    padding: 0 6px !important;
+    border-radius: 4px !important;
+    line-height: 1 !important;
+    display: inline-block !important;
+    transition: all 0.2s ease !important;
+    font-weight: 300 !important;
+    opacity: 0.6 !important;
+}
+
+.nav-arrow-left:hover,
+.nav-arrow-right:hover {
+    color: var(--interactive-accent-hover) !important;
+    background-color: rgba(0, 180, 216, 0.12) !important;
+    text-shadow: 0 0 8px rgba(0, 180, 216, 0.5) !important;
+    text-decoration: none !important;
+    opacity: 1 !important;
+}
+
+/* Add custom holiday button */
+.add-holiday-btn {
+    background: transparent !important;
+    border: 1px solid rgba(0, 180, 216, 0.3) !important;
+    color: var(--interactive-accent) !important;
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 50% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 0.8em !important;
+    margin-left: 6px !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    transition: all 0.2s ease !important;
+    vertical-align: middle !important;
+}
+
+.add-holiday-btn:hover {
+    background-color: var(--interactive-accent) !important;
+    color: #080a14 !important;
+    border-color: var(--interactive-accent) !important;
+    box-shadow: 0 0 6px rgba(0, 180, 216, 0.6) !important;
+}
+
+/* Weekly Note Link */
+.gregorian-week-link {
+    color: var(--interactive-accent) !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+.gregorian-week-link:hover {
+    color: var(--interactive-accent-hover) !important;
+    text-decoration: underline !important;
+    text-shadow: 0 0 6px rgba(0, 180, 216, 0.3) !important;
+}
+
+/* 5. Typography Hierarchy */
+
+/* Calendar System Title */
+.multi-calendar-card .card-system-name {
+    font-size: 0.72em !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    color: var(--text-muted) !important;
+    opacity: 0.85 !important;
+}
+
+/* Giant Central Date Value */
+.multi-calendar-card .card-date-val {
+    font-size: 1.55em !important;
+    font-weight: 700 !important;
+    color: var(--text-normal) !important;
+    font-family: 'EsotericNumbers', 'Georgia', serif !important;
+    line-height: 1.1 !important;
+    margin: 4px 0 !important;
+}
+
+/* Horizontal alignment adjust for featured date value */
+.featured-card .card-date-val {
+    font-size: 1.6em !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+}
+
+/* Month and Year Subtitle */
+.multi-calendar-card .card-month-year {
+    font-size: 0.82em !important;
+    font-weight: 600 !important;
+    color: var(--text-normal) !important;
+    opacity: 0.85 !important;
+    font-family: 'Cambria', serif !important;
+    line-height: 1.2 !important;
+    margin-top: 2px !important;
+}
+
+/* 6. Holiday Badges */
+.multi-calendar-card .card-holiday-badge {
+    margin-top: 6px !important;
+    font-size: 0.66em !important;
+    padding: 1px 6px !important;
+    background-color: rgba(0, 180, 216, 0.08) !important;
+    border: 1px solid rgba(0, 180, 216, 0.18) !important;
+    border-radius: 4px !important;
+    color: var(--interactive-accent-hover) !important;
+    font-style: italic !important;
+    width: 90% !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    text-align: center !important;
+}
+
+/* Featured row holiday styling */
+.featured-card .card-holiday-badge {
+    margin-top: 0 !important;
+    width: auto !important;
+    max-width: 400px !important;
+    background-color: rgba(0, 180, 216, 0.08) !important;
+    border-color: rgba(0, 180, 216, 0.2) !important;
+}
+
+.multi-calendar-card:hover .card-holiday-badge {
+    background-color: rgba(0, 180, 216, 0.15) !important;
+    border-color: rgba(0, 180, 216, 0.3) !important;
+    color: #ffffff !important;
+}
+
+/* ==========================================================================
+   🌌 7. Swappable Gregorian Info Panel View (Segmented Chunks)
+   ========================================================================== */
+
+.greg-info-content {
+    display: grid !important;
+    grid-template-columns: 1fr 2.5fr 1fr !important;
+    align-items: center !important;
+    width: 100% !important;
+    text-align: left !important;
+    gap: 12px !important;
+    animation: fadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.99); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.greg-info-content .info-left {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+}
+
+.greg-info-content .info-system-name {
+    font-size: 0.85em !important;
+    font-weight: 750 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    color: var(--text-normal) !important;
+    line-height: 1.1 !important;
+}
+
+.greg-info-content .info-center {
+    font-family: 'Cambria', serif !important;
+    font-size: 0.82em !important;
+    color: var(--text-normal) !important;
+    line-height: 1.35 !important;
+    text-align: center !important;
+    border-left: 1px dashed rgba(255, 255, 255, 0.15) !important;
+    border-right: 1px dashed rgba(255, 255, 255, 0.15) !important;
+    padding: 0 16px !important;
+}
+
+.greg-info-content .info-right {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    text-align: right !important;
+}
+
+.greg-info-content .info-abbrev {
+    font-size: 0.85em !important;
+    font-weight: 750 !important;
+    color: var(--interactive-accent) !important;
+    line-height: 1.1 !important;
+    text-transform: uppercase !important;
+}
+
+.greg-info-content .info-long-name {
+    font-size: 0.72em !important;
+    color: var(--text-muted) !important;
+    font-weight: 600 !important;
+    margin-top: 3px !important;
+    line-height: 1.15 !important;
+}
+
+/* ==========================================================================
+   🌈 8. Beautiful Cascading Rainbow Spectrum (Color Wheel Flow)
+   ========================================================================== */
+
+/* Gregorian (Theme Default Cyan Accent) */
+.multi-calendar-card[data-calendar="gregorian"] {
+    --card-hover-border: rgba(0, 180, 216, 0.6);
+    --card-hover-glow: rgba(0, 180, 216, 0.2);
+}
+
+/* ROW 1: Warm Hues (Gold -> Coral -> Red -> Magenta -> Violet) */
+
+/* 1. Illuminati (Gold/Amber) */
+.multi-calendar-card[data-calendar="illuminati"] {
+    border-left: 2px solid #d97706 !important;
+    --card-hover-border: #f59e0b;
+    --card-hover-glow: rgba(245, 158, 11, 0.15);
+}
+
+/* 2. Chinese (Coral/Deep Pink-Red) */
+.multi-calendar-card[data-calendar="chinese"] {
+    border-left: 2px solid #e11d48 !important;
+    --card-hover-border: #fb7185;
+    --card-hover-glow: rgba(251, 113, 133, 0.15);
+}
+
+/* 3. Thelemic (Scarlet Red) */
+.multi-calendar-card[data-calendar="thelemic"] {
+    border-left: 2px solid #dc2626 !important;
+    --card-hover-border: #ef4444;
+    --card-hover-glow: rgba(239, 68, 68, 0.15);
+}
+
+/* 4. Erisian (Discordian Magenta) */
+.multi-calendar-card[data-calendar="erisian"] {
+    border-left: 2px solid #db2777 !important;
+    --card-hover-border: #ec4899;
+    --card-hover-glow: rgba(236, 72, 153, 0.15);
+}
+
+/* 5. Poundian (Violet/Lavender) */
+.multi-calendar-card[data-calendar="poundian"] {
+    border-left: 2px solid #7c3aed !important;
+    --card-hover-border: #a78bfa;
+    --card-hover-glow: rgba(167, 139, 250, 0.15);
+}
+
+/* ROW 2: Cool Hues (Royal Blue -> Sky Blue -> Emerald -> Forest Green -> Lime) */
+
+/* 6. French Revolutionary (Indigo/Royal Blue) */
+.multi-calendar-card[data-calendar="frenchRev"] {
+    border-left: 2px solid #2563eb !important;
+    --card-hover-border: #3b82f6;
+    --card-hover-glow: rgba(59, 130, 246, 0.15);
+}
+
+/* 7. Hebrew (Sky Blue/Silver) */
+.multi-calendar-card[data-calendar="hebrew"] {
+    border-left: 2px solid #0284c7 !important;
+    --card-hover-border: #38bdf8;
+    --card-hover-glow: rgba(56, 189, 248, 0.15);
+}
+
+/* 8. Pataphysical (Emerald Green) */
+.multi-calendar-card[data-calendar="pataphysical"] {
+    border-left: 2px solid #059669 !important;
+    --card-hover-border: #10b981;
+    --card-hover-glow: rgba(16, 185, 129, 0.15);
+}
+
+/* 9. Islamic (Forest Green) */
+.multi-calendar-card[data-calendar="islamic"] {
+    border-left: 2px solid #16a34a !important;
+    --card-hover-border: #22c55e;
+    --card-hover-glow: rgba(34, 197, 94, 0.15);
+}
+
+/* 10. Mayan (Jungle Lime Green) */
+.multi-calendar-card[data-calendar="mayan"] {
+    border-left: 2px solid #65a30d !important;
+    --card-hover-border: #84cc16;
+    --card-hover-glow: rgba(132, 204, 22, 0.15);
+}
+
+/* ==========================================================================
+   🧱 9. Main Layout Wrapper (Resolves Layout Shift/Scroll Jumping)
+   ========================================================================== */
+.multi-calendar-main-wrapper {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 270px; /* Reserves standard height on desktop to prevent container collapse */
+    content-visibility: auto; /* Skip layout & rendering of elements off-screen */
+    contain-intrinsic-size: auto 270px; /* Use estimated height of 270px when off-screen */
+}
+
+/* On mobile, cards wrap to 2 columns, increasing the height */
+@media (max-width: 680px) {
+    .multi-calendar-main-wrapper {
+        min-height: 480px;
+        contain-intrinsic-size: auto 480px;
+    }
+}
+
+/* ==========================================================================
+   🎈 10. Plugin extras: floating placement + degraded fallback panel
+   ========================================================================== */
+
+/* `float: true` fence arg pins the calendar to the top of the scroll view */
+.eleven-days-float {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50 !important;
+    background-color: var(--background-primary) !important;
+    padding-bottom: 4px !important;
+}
+
+/* Engine-failure fallback keeps navigation alive */
+.eleven-days-fallback {
+    justify-content: center !important;
+    gap: 20px !important;
+    min-height: 52px !important;
+    width: 100% !important;
+}
+
+.eleven-days-fallback .nav-arrow-left,
+.eleven-days-fallback .nav-arrow-right {
+    font-size: 1.2em !important;
+}
+
+.eleven-days-fallback-date {
+    font-weight: bold !important;
+    font-size: 1.1em !important;
+}
+
+.eleven-days-fallback-msg {
+    font-size: 0.75em !important;
+    color: var(--text-muted) !important;
+    margin-top: 6px !important;
+    text-align: center !important;
+}
+
