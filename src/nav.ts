@@ -6,20 +6,48 @@ export interface DailyConfig {
 	format: string;
 }
 
+/* Neither the core Daily Notes plugin nor Periodic Notes appear in the public
+ * typings, so their option surfaces get described structurally here. */
+interface DailyNoteOptions {
+	folder?: string;
+	format?: string;
+}
+
+interface PeriodicNotesDaily extends DailyNoteOptions {
+	enabled?: boolean;
+}
+
+interface PeriodicNotesPlugin {
+	settings?: { daily?: PeriodicNotesDaily };
+}
+
+interface InternalPlugin {
+	enabled?: boolean;
+	instance?: { options?: DailyNoteOptions };
+}
+
+interface AppInternals {
+	plugins?: { getPlugin(id: string): unknown };
+	internalPlugins?: { getPluginById(id: string): InternalPlugin | null };
+}
+
 /** Read the user's daily-note location from Periodic Notes (if it manages
  * daily notes) or the core Daily Notes plugin. Falls back to vault root +
- * YYYY-MM-DD. Both plugins expose these options untyped, hence the anys. */
+ * YYYY-MM-DD. */
 export function detectDailyConfig(app: App): DailyConfig {
-	/* eslint-disable @typescript-eslint/no-explicit-any */
-	const anyApp = app as any;
-	const periodicDaily = anyApp.plugins?.getPlugin?.("periodic-notes")?.settings?.daily;
+	const internals = app as unknown as AppInternals;
+	const periodic = internals.plugins?.getPlugin("periodic-notes") as
+		| PeriodicNotesPlugin
+		| null
+		| undefined;
+	const periodicDaily = periodic?.settings?.daily;
 	if (periodicDaily?.enabled && (periodicDaily.folder || periodicDaily.format)) {
 		return {
 			folder: (periodicDaily.folder ?? "").trim(),
 			format: (periodicDaily.format || "YYYY-MM-DD").trim()
 		};
 	}
-	const dailyNotes = anyApp.internalPlugins?.getPluginById?.("daily-notes");
+	const dailyNotes = internals.internalPlugins?.getPluginById("daily-notes");
 	const options = dailyNotes?.instance?.options;
 	if (dailyNotes?.enabled && options) {
 		return {

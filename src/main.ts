@@ -43,7 +43,8 @@ export default class ElevenDaysPlugin extends Plugin {
 	}
 
 	async loadSettings(): Promise<void> {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		const loaded = (await this.loadData()) as Partial<ElevenDaysSettings> | null;
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, loaded ?? {});
 	}
 
 	async saveSettings(): Promise<void> {

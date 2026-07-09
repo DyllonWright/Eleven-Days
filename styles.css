@@ -293,8 +293,10 @@
    🌌 7. Swappable Gregorian Info Panel View (Segmented Chunks)
    ========================================================================== */
 
+/* Hidden until .showing-info lands on the featured card; the renderer only
+   toggles classes + the --ed-info-accent custom property */
 .greg-info-content {
-    display: grid !important;
+    display: none !important;
     grid-template-columns: 1fr 2.5fr 1fr !important;
     align-items: center !important;
     width: 100% !important;
@@ -306,6 +308,21 @@
 @keyframes fadeIn {
     from { opacity: 0; transform: scale(0.99); }
     to { opacity: 1; transform: scale(1); }
+}
+
+.multi-calendar-card.featured-card.showing-info .greg-info-content {
+    display: grid !important;
+}
+
+.multi-calendar-card.featured-card.showing-info .greg-default-content {
+    display: none !important;
+}
+
+/* The clicked system's accent wraps the banner while its info shows */
+.multi-calendar-card.featured-card.showing-info {
+    border-style: solid !important;
+    border-color: var(--ed-info-accent, var(--interactive-accent)) !important;
+    box-shadow: 0 0 10px 1px color-mix(in srgb, var(--ed-info-accent, #00b4d8) 25%, transparent) !important;
 }
 
 .greg-info-content .info-left {
@@ -367,6 +384,7 @@
 
 .multi-calendar-card:not(.featured-card) {
     border-left: 2px solid var(--card-accent, transparent) !important;
+    cursor: pointer !important;
 }
 
 /* Gregorian (Theme Default Cyan Accent) */
@@ -506,5 +524,10 @@
     color: var(--text-muted) !important;
     margin-top: 6px !important;
     text-align: center !important;
+}
+
+/* Quick-add holiday modal */
+.eleven-days-modal-input {
+    width: 100%;
 }
 

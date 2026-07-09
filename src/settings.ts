@@ -78,9 +78,11 @@ export class HolidayModal extends Modal {
 
 	onOpen(): void {
 		this.titleEl.setText(`Add annual event — ${this.dateLabel}`);
-		const input = this.contentEl.createEl("input", { type: "text" });
+		const input = this.contentEl.createEl("input", {
+			type: "text",
+			cls: "eleven-days-modal-input"
+		});
 		input.placeholder = "Event name (repeats every year)";
-		input.style.width = "100%";
 
 		const save = async () => {
 			const label = input.value.trim();

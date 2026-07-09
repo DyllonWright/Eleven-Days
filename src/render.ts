@@ -111,7 +111,7 @@ export class CalendarBlock extends MarkdownRenderChild {
 				: s.accentColor;
 		const weekday = parseInt(m.format("d"), 10) || 0;
 		const accents = computeAccents(style, baseColor, weekday);
-		wrapper.style.setProperty("--ed-accent", accents.featured);
+		wrapper.setCssProps({ "--ed-accent": accents.featured });
 		const accentByKey: Partial<Record<CalendarKey, string>> = {};
 		DISPLAY_ORDER.forEach((key, i) => (accentByKey[key] = accents.cards[i]));
 
@@ -214,19 +214,15 @@ export class CalendarBlock extends MarkdownRenderChild {
 		}
 
 		// --- Swappable info panel (mythos of a clicked system) ---------------
+		// Visibility swaps ride entirely on the .showing-info class; the accent
+		// travels as a CSS custom property. No direct style writes.
 		const gregInfo = gregCard.createDiv({ cls: "greg-info-content" });
-		gregInfo.style.display = "none";
 
 		let activeKey: CalendarKey | null = null;
 
 		const restoreGregorian = () => {
-			gregDefault.style.display = "grid";
-			gregInfo.style.display = "none";
 			gregCard.removeClass("showing-info");
 			gregCard.removeAttribute("data-active-info");
-			gregCard.style.borderColor = "";
-			gregCard.style.borderStyle = "";
-			gregCard.style.boxShadow = "";
 			activeKey = null;
 			wrapper.querySelectorAll(".multi-calendar-card").forEach((c) => c.removeClass("active-card-info"));
 		};
@@ -245,15 +241,9 @@ export class CalendarBlock extends MarkdownRenderChild {
 			infoRight.createDiv({ cls: "info-abbrev", text: info.abbrev });
 			infoRight.createDiv({ cls: "info-long-name", text: info.longName });
 
-			gregDefault.style.display = "none";
-			gregInfo.style.display = "grid";
 			gregCard.addClass("showing-info");
 			gregCard.setAttribute("data-active-info", key);
-
-			const color = accentByKey[key] ?? accents.featured;
-			gregCard.style.borderColor = color;
-			gregCard.style.borderStyle = "solid";
-			gregCard.style.boxShadow = `0 0 10px 1px ${withAlpha(color, 0.25)}`;
+			gregCard.setCssProps({ "--ed-info-accent": accentByKey[key] ?? accents.featured });
 		};
 
 		gregCard.addEventListener("click", (e) => {
@@ -270,15 +260,16 @@ export class CalendarBlock extends MarkdownRenderChild {
 
 			const card = subgrid.createDiv({ cls: "multi-calendar-card" });
 			card.setAttribute("data-calendar", key);
-			card.style.cursor = "pointer";
 
 			// Spectrum keeps the stylesheet's per-system hues (with their tuned
 			// hover shades); the other styles paint each card inline.
 			if (style !== "spectrum") {
 				const accent = accentByKey[key] ?? accents.featured;
-				card.style.setProperty("--card-accent", accent);
-				card.style.setProperty("--card-hover-border", accent);
-				card.style.setProperty("--card-hover-glow", withAlpha(accent, 0.15));
+				card.setCssProps({
+					"--card-accent": accent,
+					"--card-hover-border": accent,
+					"--card-hover-glow": withAlpha(accent, 0.15)
+				});
 			}
 
 			card.createDiv({ cls: "card-system-name", text: `${EMOJIS[key] ?? "📅"} ${cal.name}` });
