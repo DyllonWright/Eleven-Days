@@ -1,6 +1,7 @@
 import { App, Modal, Notice, PluginSettingTab, Setting } from "obsidian";
 import type ElevenDaysPlugin from "./main";
 import type { HolidayMap } from "./engine";
+import type { ColorStyle } from "./calendars";
 import { detectDailyConfig } from "./nav";
 
 export interface ElevenDaysSettings {
@@ -20,6 +21,11 @@ export interface ElevenDaysSettings {
 	weeklyFormat: string;
 	/** Personal annual holidays keyed by "MM-DD". */
 	holidays: HolidayMap;
+	/** Card tinting: per-system spectrum, mono palette, warm/cool rows, or a
+	 * planetary seven-day rotation. */
+	colorStyle: ColorStyle;
+	/** Base color for the mono style (hex). */
+	accentColor: string;
 	firstRunDone: boolean;
 }
 
@@ -32,6 +38,8 @@ export const DEFAULT_SETTINGS: ElevenDaysSettings = {
 	weeklyFolder: "",
 	weeklyFormat: "gggg-[W]ww",
 	holidays: {},
+	colorStyle: "spectrum",
+	accentColor: "#8b7cf6",
 	firstRunDone: false
 };
 
@@ -241,6 +249,37 @@ export class ElevenDaysSettingTab extends PluginSettingTab {
 				s.weeklyFormat = v.trim() || "gggg-[W]ww";
 				await this.plugin.saveSettings();
 			}));
+
+		new Setting(containerEl).setName("Appearance").setHeading();
+
+		new Setting(containerEl)
+			.setName("Color style")
+			.setDesc(
+				"Spectrum tints each system its own hue. Mono builds a soft palette around one color you pick. " +
+				"Warm/cool splits the two rows. Weekday rotates through seven planetary colors — gold for the Sun's day, scarlet for Mars', violet for Jupiter's…"
+			)
+			.addDropdown((d) =>
+				d
+					.addOption("spectrum", "Spectrum (one hue per system)")
+					.addOption("mono", "Mono (palette around one color)")
+					.addOption("warm-cool", "Warm / cool rows")
+					.addOption("weekday", "Weekday rotation (planetary)")
+					.setValue(s.colorStyle)
+					.onChange(async (v) => {
+						s.colorStyle = v as ColorStyle;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Mono base color")
+			.setDesc("The single soft color the mono style builds its palette around.")
+			.addColorPicker((c) =>
+				c.setValue(s.accentColor).onChange(async (v) => {
+					s.accentColor = v;
+					await this.plugin.saveSettings();
+				})
+			);
 
 		new Setting(containerEl).setName("Personal holidays").setHeading();
 		containerEl.createEl("p", {

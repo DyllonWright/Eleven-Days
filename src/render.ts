@@ -2,7 +2,15 @@ import { MarkdownRenderChild, normalizePath } from "obsidian";
 import { moment } from "./moment";
 import buildCalendars from "./engine";
 import type { CalendarData, CalendarEntry, CalendarKey } from "./engine";
-import { CALENDAR_INFO, COLOR_MAP, DISPLAY_ORDER, EMOJIS, getOrdinalNum } from "./calendars";
+import {
+	CALENDAR_INFO,
+	ColorStyle,
+	computeAccents,
+	DISPLAY_ORDER,
+	EMOJIS,
+	getOrdinalNum,
+	withAlpha
+} from "./calendars";
 import { effectiveDailyConfig, resolveDateNote } from "./nav";
 import { HolidayModal } from "./settings";
 import type ElevenDaysPlugin from "./main";
@@ -12,9 +20,12 @@ interface BlockArgs {
 	float: boolean;
 	nav: boolean;
 	weekly: boolean;
+	style?: string;
+	color?: string;
 }
 
-/** Fence body accepts simple "key: value" lines — date, float, nav, weekly. */
+/** Fence body accepts simple "key: value" lines — date, float, nav, weekly,
+ * style (spectrum | mono | warm-cool | weekday), color (hex, for mono). */
 function parseArgs(source: string): BlockArgs {
 	const raw: Record<string, string> = {};
 	for (const line of source.split("\n")) {
@@ -27,7 +38,9 @@ function parseArgs(source: string): BlockArgs {
 		date: raw["date"],
 		float: flag(raw["float"], false),
 		nav: flag(raw["nav"], true),
-		weekly: flag(raw["weekly"], true)
+		weekly: flag(raw["weekly"], true),
+		style: raw["style"],
+		color: raw["color"]
 	};
 }
 
@@ -86,6 +99,21 @@ export class CalendarBlock extends MarkdownRenderChild {
 
 		const wrapper = el.createDiv({ cls: ["multi-calendar-main-wrapper", "eleven-days-root"] });
 		if (this.args.float) wrapper.addClass("eleven-days-float");
+
+		// Color style: fence args override settings; weekday keys off the shown date.
+		const VALID_STYLES: ColorStyle[] = ["spectrum", "mono", "warm-cool", "weekday"];
+		const style: ColorStyle = VALID_STYLES.includes(this.args.style as ColorStyle)
+			? (this.args.style as ColorStyle)
+			: s.colorStyle;
+		const baseColor =
+			this.args.color && /^#?[0-9a-fA-F]{6}$/.test(this.args.color.trim())
+				? this.args.color.trim()
+				: s.accentColor;
+		const weekday = parseInt(m.format("d"), 10) || 0;
+		const accents = computeAccents(style, baseColor, weekday);
+		wrapper.style.setProperty("--ed-accent", accents.featured);
+		const accentByKey: Partial<Record<CalendarKey, string>> = {};
+		DISPLAY_ORDER.forEach((key, i) => (accentByKey[key] = accents.cards[i]));
 
 		let data: CalendarData | null = null;
 		try {
@@ -215,10 +243,10 @@ export class CalendarBlock extends MarkdownRenderChild {
 			gregCard.addClass("showing-info");
 			gregCard.setAttribute("data-active-info", key);
 
-			const color = COLOR_MAP[key] ?? "var(--interactive-accent)";
+			const color = accentByKey[key] ?? accents.featured;
 			gregCard.style.borderColor = color;
 			gregCard.style.borderStyle = "solid";
-			gregCard.style.boxShadow = `0 0 10px 1px ${color}40`;
+			gregCard.style.boxShadow = `0 0 10px 1px ${withAlpha(color, 0.25)}`;
 		};
 
 		gregCard.addEventListener("click", (e) => {
@@ -236,6 +264,15 @@ export class CalendarBlock extends MarkdownRenderChild {
 			const card = subgrid.createDiv({ cls: "multi-calendar-card" });
 			card.setAttribute("data-calendar", key);
 			card.style.cursor = "pointer";
+
+			// Spectrum keeps the stylesheet's per-system hues (with their tuned
+			// hover shades); the other styles paint each card inline.
+			if (style !== "spectrum") {
+				const accent = accentByKey[key] ?? accents.featured;
+				card.style.setProperty("--card-accent", accent);
+				card.style.setProperty("--card-hover-border", accent);
+				card.style.setProperty("--card-hover-glow", withAlpha(accent, 0.15));
+			}
 
 			card.createDiv({ cls: "card-system-name", text: `${EMOJIS[key] ?? "📅"} ${cal.name}` });
 			card.createDiv({ cls: "card-date-val", text: cal.date || "—" });

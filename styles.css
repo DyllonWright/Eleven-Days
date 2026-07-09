@@ -1,4 +1,4 @@
-/* ==========================================================================
+?/* ==========================================================================
    🌌 Eleven Days — calendar dashboard stylesheet
    ========================================================================== */
 
@@ -42,10 +42,11 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* 3. Featured Card Styling (Gregorian Card on top) */
+/* 3. Featured Card Styling (Gregorian Card on top) — follows --ed-accent,
+   which the renderer sets from the active color style (default cyan) */
 .multi-calendar-card.featured-card {
-    background-color: rgba(0, 180, 216, 0.04) !important;
-    border: 1px dashed rgba(0, 180, 216, 0.3) !important;
+    background-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 4%, transparent) !important;
+    border: 1px dashed color-mix(in srgb, var(--ed-accent, #00b4d8) 30%, transparent) !important;
     min-height: 52px !important;
     display: flex !important;
     align-items: center !important;
@@ -126,9 +127,9 @@
 }
 
 .multi-calendar-card.featured-card:hover {
-    background-color: rgba(0, 180, 216, 0.07) !important;
-    border-color: rgba(0, 180, 216, 0.6) !important;
-    box-shadow: 0 0 10px 1px rgba(0, 180, 216, 0.15) !important;
+    background-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 7%, transparent) !important;
+    border-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 60%, transparent) !important;
+    box-shadow: 0 0 10px 1px color-mix(in srgb, var(--ed-accent, #00b4d8) 15%, transparent) !important;
     transform: translateY(-1px) !important;
 }
 
@@ -168,9 +169,9 @@
 
 .nav-arrow-left:hover,
 .nav-arrow-right:hover {
-    color: var(--interactive-accent-hover) !important;
-    background-color: rgba(0, 180, 216, 0.12) !important;
-    text-shadow: 0 0 8px rgba(0, 180, 216, 0.5) !important;
+    color: var(--ed-accent, var(--interactive-accent-hover)) !important;
+    background-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 12%, transparent) !important;
+    text-shadow: 0 0 8px color-mix(in srgb, var(--ed-accent, #00b4d8) 50%, transparent) !important;
     text-decoration: none !important;
     opacity: 1 !important;
 }
@@ -178,8 +179,8 @@
 /* Add custom holiday button */
 .add-holiday-btn {
     background: transparent !important;
-    border: 1px solid rgba(0, 180, 216, 0.3) !important;
-    color: var(--interactive-accent) !important;
+    border: 1px solid color-mix(in srgb, var(--ed-accent, #00b4d8) 30%, transparent) !important;
+    color: var(--ed-accent, var(--interactive-accent)) !important;
     width: 16px !important;
     height: 16px !important;
     border-radius: 50% !important;
@@ -196,24 +197,24 @@
 }
 
 .add-holiday-btn:hover {
-    background-color: var(--interactive-accent) !important;
+    background-color: var(--ed-accent, var(--interactive-accent)) !important;
     color: #080a14 !important;
-    border-color: var(--interactive-accent) !important;
-    box-shadow: 0 0 6px rgba(0, 180, 216, 0.6) !important;
+    border-color: var(--ed-accent, var(--interactive-accent)) !important;
+    box-shadow: 0 0 6px color-mix(in srgb, var(--ed-accent, #00b4d8) 60%, transparent) !important;
 }
 
 /* Weekly Note Link */
 .gregorian-week-link {
-    color: var(--interactive-accent) !important;
+    color: var(--ed-accent, var(--interactive-accent)) !important;
     text-decoration: none !important;
     font-weight: 600 !important;
     transition: all 0.2s ease !important;
 }
 
 .gregorian-week-link:hover {
-    color: var(--interactive-accent-hover) !important;
+    color: var(--ed-accent, var(--interactive-accent-hover)) !important;
     text-decoration: underline !important;
-    text-shadow: 0 0 6px rgba(0, 180, 216, 0.3) !important;
+    text-shadow: 0 0 6px color-mix(in srgb, var(--ed-accent, #00b4d8) 30%, transparent) !important;
 }
 
 /* 5. Typography Hierarchy */
@@ -261,10 +262,10 @@
     margin-top: 6px !important;
     font-size: 0.66em !important;
     padding: 1px 6px !important;
-    background-color: rgba(0, 180, 216, 0.08) !important;
-    border: 1px solid rgba(0, 180, 216, 0.18) !important;
+    background-color: color-mix(in srgb, var(--card-accent, var(--ed-accent, #00b4d8)) 8%, transparent) !important;
+    border: 1px solid color-mix(in srgb, var(--card-accent, var(--ed-accent, #00b4d8)) 18%, transparent) !important;
     border-radius: 4px !important;
-    color: var(--interactive-accent-hover) !important;
+    color: var(--card-accent, var(--ed-accent, var(--interactive-accent-hover))) !important;
     font-style: italic !important;
     width: 90% !important;
     white-space: nowrap !important;
@@ -278,14 +279,14 @@
     margin-top: 0 !important;
     width: auto !important;
     max-width: 400px !important;
-    background-color: rgba(0, 180, 216, 0.08) !important;
-    border-color: rgba(0, 180, 216, 0.2) !important;
+    background-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 8%, transparent) !important;
+    border-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 20%, transparent) !important;
 }
 
 .multi-calendar-card:hover .card-holiday-badge {
-    background-color: rgba(0, 180, 216, 0.15) !important;
-    border-color: rgba(0, 180, 216, 0.3) !important;
-    color: #ffffff !important;
+    background-color: color-mix(in srgb, var(--card-accent, var(--ed-accent, #00b4d8)) 15%, transparent) !important;
+    border-color: color-mix(in srgb, var(--card-accent, var(--ed-accent, #00b4d8)) 30%, transparent) !important;
+    color: var(--text-normal) !important;
 }
 
 /* ==========================================================================
@@ -359,7 +360,14 @@
 
 /* ==========================================================================
    🌈 8. Beautiful Cascading Rainbow Spectrum (Color Wheel Flow)
+   Every subgrid card wears its accent as a left border. The spectrum defaults
+   below give each system its own hue; the mono / warm-cool / weekday styles
+   override --card-accent inline from the renderer.
    ========================================================================== */
+
+.multi-calendar-card:not(.featured-card) {
+    border-left: 2px solid var(--card-accent, transparent) !important;
+}
 
 /* Gregorian (Theme Default Cyan Accent) */
 .multi-calendar-card[data-calendar="gregorian"] {
@@ -371,35 +379,35 @@
 
 /* 1. Illuminati (Gold/Amber) */
 .multi-calendar-card[data-calendar="illuminati"] {
-    border-left: 2px solid #d97706 !important;
+    --card-accent: #d97706;
     --card-hover-border: #f59e0b;
     --card-hover-glow: rgba(245, 158, 11, 0.15);
 }
 
 /* 2. Chinese (Coral/Deep Pink-Red) */
 .multi-calendar-card[data-calendar="chinese"] {
-    border-left: 2px solid #e11d48 !important;
+    --card-accent: #e11d48;
     --card-hover-border: #fb7185;
     --card-hover-glow: rgba(251, 113, 133, 0.15);
 }
 
 /* 3. Thelemic (Scarlet Red) */
 .multi-calendar-card[data-calendar="thelemic"] {
-    border-left: 2px solid #dc2626 !important;
+    --card-accent: #dc2626;
     --card-hover-border: #ef4444;
     --card-hover-glow: rgba(239, 68, 68, 0.15);
 }
 
 /* 4. Erisian (Discordian Magenta) */
 .multi-calendar-card[data-calendar="erisian"] {
-    border-left: 2px solid #db2777 !important;
+    --card-accent: #db2777;
     --card-hover-border: #ec4899;
     --card-hover-glow: rgba(236, 72, 153, 0.15);
 }
 
 /* 5. Poundian (Violet/Lavender) */
 .multi-calendar-card[data-calendar="poundian"] {
-    border-left: 2px solid #7c3aed !important;
+    --card-accent: #7c3aed;
     --card-hover-border: #a78bfa;
     --card-hover-glow: rgba(167, 139, 250, 0.15);
 }
@@ -408,35 +416,35 @@
 
 /* 6. French Revolutionary (Indigo/Royal Blue) */
 .multi-calendar-card[data-calendar="frenchRev"] {
-    border-left: 2px solid #2563eb !important;
+    --card-accent: #2563eb;
     --card-hover-border: #3b82f6;
     --card-hover-glow: rgba(59, 130, 246, 0.15);
 }
 
 /* 7. Hebrew (Sky Blue/Silver) */
 .multi-calendar-card[data-calendar="hebrew"] {
-    border-left: 2px solid #0284c7 !important;
+    --card-accent: #0284c7;
     --card-hover-border: #38bdf8;
     --card-hover-glow: rgba(56, 189, 248, 0.15);
 }
 
 /* 8. Pataphysical (Emerald Green) */
 .multi-calendar-card[data-calendar="pataphysical"] {
-    border-left: 2px solid #059669 !important;
+    --card-accent: #059669;
     --card-hover-border: #10b981;
     --card-hover-glow: rgba(16, 185, 129, 0.15);
 }
 
 /* 9. Islamic (Forest Green) */
 .multi-calendar-card[data-calendar="islamic"] {
-    border-left: 2px solid #16a34a !important;
+    --card-accent: #16a34a;
     --card-hover-border: #22c55e;
     --card-hover-glow: rgba(34, 197, 94, 0.15);
 }
 
 /* 10. Mayan (Jungle Lime Green) */
 .multi-calendar-card[data-calendar="mayan"] {
-    border-left: 2px solid #65a30d !important;
+    --card-accent: #65a30d;
     --card-hover-border: #84cc16;
     --card-hover-glow: rgba(132, 204, 22, 0.15);
 }
