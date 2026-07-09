@@ -125,16 +125,23 @@ export class CalendarBlock extends MarkdownRenderChild {
 		const navOn = s.navEnabled && this.args.nav;
 		const weeklyOn = s.weeklyEnabled && this.args.weekly && s.weeklyFolder.trim() !== "";
 
-		// Nav resolves at CLICK time so it always sees the current file layout.
-		const openAdjacent = (deltaDays: number) => {
+		// Nav resolves at CLICK time so it always sees the current file layout;
+		// the same resolution runs at render time only to feed hover previews
+		// a real target (an empty data-href makes page preview show
+		// «Unable to find ""»).
+		const resolveAdjacent = (deltaDays: number): string => {
 			const { folder, format } = effectiveDailyConfig(app, s);
 			const targetRel = moment(m).add(deltaDays, "days").format(format);
 			const { file, createPath } = resolveDateNote(app, s, this.sourcePath, targetRel, folder);
-			void app.workspace.openLinkText(file ? file.path : createPath, this.sourcePath);
+			return file ? file.path : createPath;
+		};
+		const openAdjacent = (deltaDays: number) => {
+			void app.workspace.openLinkText(resolveAdjacent(deltaDays), this.sourcePath);
 		};
 
-		const navLink = (text: string, cls: string, onClick: () => void): HTMLAnchorElement => {
-			const a = createEl("a", { cls: ["internal-link", cls], text, href: "#" });
+		const navLink = (text: string, cls: string, hrefPath: string, onClick: () => void): HTMLAnchorElement => {
+			const a = createEl("a", { cls: ["internal-link", cls], text, href: hrefPath });
+			a.setAttribute("data-href", hrefPath);
 			a.addEventListener("click", (e) => {
 				e.preventDefault();
 				e.stopPropagation();
@@ -146,9 +153,9 @@ export class CalendarBlock extends MarkdownRenderChild {
 		if (!data) {
 			// Degraded panel: keep the navigation useful even if the engine throws.
 			const fallback = wrapper.createDiv({ cls: ["multi-calendar-card", "featured-card", "eleven-days-fallback"] });
-			if (navOn) fallback.appendChild(navLink("‹ Previous day", "nav-arrow-left", () => openAdjacent(-1)));
+			if (navOn) fallback.appendChild(navLink("‹ Previous day", "nav-arrow-left", resolveAdjacent(-1), () => openAdjacent(-1)));
 			fallback.createSpan({ cls: "eleven-days-fallback-date", text: m.format("dddd, MMMM Do YYYY") });
-			if (navOn) fallback.appendChild(navLink("Next day ›", "nav-arrow-right", () => openAdjacent(1)));
+			if (navOn) fallback.appendChild(navLink("Next day ›", "nav-arrow-right", resolveAdjacent(1), () => openAdjacent(1)));
 			wrapper.createDiv({
 				cls: "eleven-days-fallback-msg",
 				text: "⚠️ Calendar engine unavailable — see the developer console."
@@ -178,23 +185,23 @@ export class CalendarBlock extends MarkdownRenderChild {
 		});
 
 		const center = gregDefault.createDiv({ cls: "featured-center" });
-		if (navOn) center.appendChild(navLink("‹", "nav-arrow-left", () => openAdjacent(-1)));
+		if (navOn) center.appendChild(navLink("‹", "nav-arrow-left", resolveAdjacent(-1), () => openAdjacent(-1)));
 		const dayNum = parseInt(greg.date, 10);
 		center.createSpan({
 			cls: "card-date-val",
 			text: `${isNaN(dayNum) ? greg.date : getOrdinalNum(dayNum)} of ${greg.month}`
 		});
-		if (navOn) center.appendChild(navLink("›", "nav-arrow-right", () => openAdjacent(1)));
+		if (navOn) center.appendChild(navLink("›", "nav-arrow-right", resolveAdjacent(1), () => openAdjacent(1)));
 
 		const right = gregDefault.createDiv({ cls: "featured-right" });
 		right.createDiv({ cls: "featured-year", text: greg.year });
 		if (weeklyOn) {
 			const weekEl = right.createDiv({ cls: "featured-week" });
+			const weekPath = normalizePath(
+				`${s.weeklyFolder.trim()}/${m.format(s.weeklyFormat || "gggg-[W]ww")}`
+			);
 			weekEl.appendChild(
-				navLink(`Week ${m.format("ww")}`, "gregorian-week-link", () => {
-					const weekPath = normalizePath(
-						`${s.weeklyFolder.trim()}/${m.format(s.weeklyFormat || "gggg-[W]ww")}`
-					);
+				navLink(`Week ${m.format("ww")}`, "gregorian-week-link", weekPath, () => {
 					void app.workspace.openLinkText(weekPath, this.sourcePath);
 				})
 			);
