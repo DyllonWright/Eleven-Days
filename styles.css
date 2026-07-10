@@ -3,290 +3,290 @@
    ========================================================================== */
 
 /* 1. Containers & Layout Hierarchy */
-.multi-calendar-featured-wrapper {
-    width: 100% !important;
-    margin: 10px 0 8px 0 !important;
-    display: block !important;
+.eleven-days-root .multi-calendar-featured-wrapper {
+    width: 100%;
+    margin: 10px 0 8px 0;
+    display: block;
 }
 
 /* Secondary grid of 10 calendars below */
-.multi-calendar-subgrid {
-    display: grid !important;
-    grid-template-columns: repeat(5, 1fr) !important; /* Forces exactly 5 equal columns for perfect 5x2 row alignment */
-    gap: 8px !important;
-    width: 100% !important;
-    margin: 0 0 14px 0 !important;
+.eleven-days-root .multi-calendar-subgrid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* Forces exactly 5 equal columns for perfect 5x2 row alignment */
+    gap: 8px;
+    width: 100%;
+    margin: 0 0 14px 0;
 }
 
 /* Responsive adjustment: drop to 2 columns on very narrow screens/panels */
 @media (max-width: 680px) {
-    .multi-calendar-subgrid {
-        grid-template-columns: repeat(2, 1fr) !important;
+    .eleven-days-root .multi-calendar-subgrid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
 /* 2. Glassmorphic Card Design */
-.multi-calendar-card {
-    background-color: rgba(8, 10, 20, 0.45) !important;
-    border: 1px solid #13172e !important;
-    border-radius: 6px !important;
-    padding: 8px 6px !important;
-    text-align: center !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    min-height: 85px !important;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    position: relative !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+.eleven-days-root .multi-calendar-card {
+    background-color: rgba(8, 10, 20, 0.45);
+    border: 1px solid #13172e;
+    border-radius: 6px;
+    padding: 8px 6px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 85px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 /* 3. Featured Card Styling (Gregorian Card on top) — follows --ed-accent,
    which the renderer sets from the active color style (default cyan) */
-.multi-calendar-card.featured-card {
-    background-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 4%, transparent) !important;
-    border: 1px dashed color-mix(in srgb, var(--ed-accent, #00b4d8) 30%, transparent) !important;
-    min-height: 52px !important;
-    display: flex !important;
-    align-items: center !important;
-    padding: 8px 16px !important;
-    margin-bottom: 2px !important;
-    cursor: pointer !important;
-    position: relative !important;
+.eleven-days-root .multi-calendar-card.featured-card {
+    background-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 4%, transparent);
+    border: 1px dashed color-mix(in srgb, var(--ed-accent, #00b4d8) 30%, transparent);
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    margin-bottom: 2px;
+    cursor: pointer;
+    position: relative;
 }
 
 /* Container for standard Gregorian elements */
-.greg-default-content {
-    display: grid !important;
-    grid-template-columns: 1fr auto 1fr !important;
-    grid-template-areas: "left center right" !important;
-    grid-template-rows: auto !important;
-    align-items: center !important;
-    width: 100% !important;
+.eleven-days-root .greg-default-content {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas: "left center right";
+    grid-template-rows: auto;
+    align-items: center;
+    width: 100%;
 }
 
 /* Morphing default content when holiday is present */
-.multi-calendar-card.featured-card.has-holiday .greg-default-content {
+.eleven-days-root .multi-calendar-card.featured-card.has-holiday .greg-default-content {
     grid-template-areas: 
         "left center right"
-        "holiday holiday holiday" !important;
-    grid-template-rows: auto auto !important;
-    row-gap: 6px !important;
+        "holiday holiday holiday";
+    grid-template-rows: auto auto;
+    row-gap: 6px;
 }
 
-.featured-left {
-    grid-area: left !important;
-    text-align: left !important;
-    font-size: 0.8em !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.08em !important;
-    color: var(--text-muted) !important;
-    display: flex !important;
-    align-items: center !important;
+.eleven-days-root .featured-left {
+    grid-area: left;
+    text-align: left;
+    font-size: 0.8em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
 }
 
-.featured-center {
-    grid-area: center !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 12px !important;
+.eleven-days-root .featured-center {
+    grid-area: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
 }
 
-.featured-right {
-    grid-area: right !important;
-    text-align: right !important;
-    font-size: 0.95em !important;
-    color: var(--text-muted) !important;
-    font-family: 'Cambria', serif !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
+.eleven-days-root .featured-right {
+    grid-area: right;
+    text-align: right;
+    font-size: 0.95em;
+    color: var(--text-muted);
+    font-family: 'Cambria', serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.featured-year {
-    font-size: 0.95em !important;
-    font-weight: 700 !important;
-    color: var(--text-normal) !important;
-    line-height: 1.1 !important;
+.eleven-days-root .featured-year {
+    font-size: 0.95em;
+    font-weight: 700;
+    color: var(--text-normal);
+    line-height: 1.1;
 }
 
-.featured-week {
-    margin-top: 2px !important;
-    font-size: 0.82em !important;
-    line-height: 1.1 !important;
+.eleven-days-root .featured-week {
+    margin-top: 2px;
+    font-size: 0.82em;
+    line-height: 1.1;
 }
 
-.featured-holiday-row {
-    grid-area: holiday !important;
-    width: 100% !important;
-    display: flex !important;
-    justify-content: center !important;
+.eleven-days-root .featured-holiday-row {
+    grid-area: holiday;
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
-.multi-calendar-card.featured-card:hover {
-    background-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 7%, transparent) !important;
-    border-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 60%, transparent) !important;
-    box-shadow: 0 0 10px 1px color-mix(in srgb, var(--ed-accent, #00b4d8) 15%, transparent) !important;
-    transform: translateY(-1px) !important;
+.eleven-days-root .multi-calendar-card.featured-card:hover {
+    background-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 7%, transparent);
+    border-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 60%, transparent);
+    box-shadow: 0 0 10px 1px color-mix(in srgb, var(--ed-accent, #00b4d8) 15%, transparent);
+    transform: translateY(-1px);
 }
 
 /* Hover micro-animations on subgrid cards */
-.multi-calendar-card:not(.featured-card):hover {
-    transform: translateY(-2px) !important;
-    border-color: var(--card-hover-border, rgba(0, 180, 216, 0.4)) !important;
-    background-color: rgba(8, 10, 20, 0.6) !important;
-    box-shadow: 0 0 8px 1px var(--card-hover-glow, rgba(0, 180, 216, 0.15)), 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+.eleven-days-root .multi-calendar-card:not(.featured-card):hover {
+    transform: translateY(-2px);
+    border-color: var(--card-hover-border, rgba(0, 180, 216, 0.4));
+    background-color: rgba(8, 10, 20, 0.6);
+    box-shadow: 0 0 8px 1px var(--card-hover-glow, rgba(0, 180, 216, 0.15)), 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Highlight style for active card selection */
-.multi-calendar-card.active-card-info {
-    transform: translateY(-2px) !important;
-    border-color: var(--card-hover-border) !important;
-    background-color: rgba(8, 10, 20, 0.65) !important;
-    box-shadow: 0 0 10px 2px var(--card-hover-glow), 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+.eleven-days-root .multi-calendar-card.active-card-info {
+    transform: translateY(-2px);
+    border-color: var(--card-hover-border);
+    background-color: rgba(8, 10, 20, 0.65);
+    box-shadow: 0 0 10px 2px var(--card-hover-glow), 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 /* 4. Interactive Navigation Elements */
 
 /* Navigation Arrows */
-.nav-arrow-left,
-.nav-arrow-right {
-    font-size: 1.6em !important;
-    color: var(--text-muted) !important;
-    cursor: pointer !important;
-    text-decoration: none !important;
-    padding: 0 6px !important;
-    border-radius: 4px !important;
-    line-height: 1 !important;
-    display: inline-block !important;
-    transition: all 0.2s ease !important;
-    font-weight: 300 !important;
-    opacity: 0.6 !important;
+.eleven-days-root .nav-arrow-left,
+.eleven-days-root .nav-arrow-right {
+    font-size: 1.6em;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-decoration: none;
+    padding: 0 6px;
+    border-radius: 4px;
+    line-height: 1;
+    display: inline-block;
+    transition: all 0.2s ease;
+    font-weight: 300;
+    opacity: 0.6;
 }
 
-.nav-arrow-left:hover,
-.nav-arrow-right:hover {
-    color: var(--ed-accent, var(--interactive-accent-hover)) !important;
-    background-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 12%, transparent) !important;
-    text-shadow: 0 0 8px color-mix(in srgb, var(--ed-accent, #00b4d8) 50%, transparent) !important;
-    text-decoration: none !important;
-    opacity: 1 !important;
+.eleven-days-root .nav-arrow-left:hover,
+.eleven-days-root .nav-arrow-right:hover {
+    color: var(--ed-accent, var(--interactive-accent-hover));
+    background-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 12%, transparent);
+    text-shadow: 0 0 8px color-mix(in srgb, var(--ed-accent, #00b4d8) 50%, transparent);
+    text-decoration: none;
+    opacity: 1;
 }
 
 /* Add custom holiday button */
-.add-holiday-btn {
-    background: transparent !important;
-    border: 1px solid color-mix(in srgb, var(--ed-accent, #00b4d8) 30%, transparent) !important;
-    color: var(--ed-accent, var(--interactive-accent)) !important;
-    width: 16px !important;
-    height: 16px !important;
-    border-radius: 50% !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-size: 0.8em !important;
-    margin-left: 6px !important;
-    cursor: pointer !important;
-    padding: 0 !important;
-    line-height: 1 !important;
-    transition: all 0.2s ease !important;
-    vertical-align: middle !important;
+.eleven-days-root .add-holiday-btn {
+    background: transparent;
+    border: 1px solid color-mix(in srgb, var(--ed-accent, #00b4d8) 30%, transparent);
+    color: var(--ed-accent, var(--interactive-accent));
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8em;
+    margin-left: 6px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: all 0.2s ease;
+    vertical-align: middle;
 }
 
-.add-holiday-btn:hover {
-    background-color: var(--ed-accent, var(--interactive-accent)) !important;
-    color: #080a14 !important;
-    border-color: var(--ed-accent, var(--interactive-accent)) !important;
-    box-shadow: 0 0 6px color-mix(in srgb, var(--ed-accent, #00b4d8) 60%, transparent) !important;
+.eleven-days-root .add-holiday-btn:hover {
+    background-color: var(--ed-accent, var(--interactive-accent));
+    color: #080a14;
+    border-color: var(--ed-accent, var(--interactive-accent));
+    box-shadow: 0 0 6px color-mix(in srgb, var(--ed-accent, #00b4d8) 60%, transparent);
 }
 
 /* Weekly Note Link */
-.gregorian-week-link {
-    color: var(--ed-accent, var(--interactive-accent)) !important;
-    text-decoration: none !important;
-    font-weight: 600 !important;
-    transition: all 0.2s ease !important;
+.eleven-days-root .gregorian-week-link {
+    color: var(--ed-accent, var(--interactive-accent));
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
 }
 
-.gregorian-week-link:hover {
-    color: var(--ed-accent, var(--interactive-accent-hover)) !important;
-    text-decoration: underline !important;
-    text-shadow: 0 0 6px color-mix(in srgb, var(--ed-accent, #00b4d8) 30%, transparent) !important;
+.eleven-days-root .gregorian-week-link:hover {
+    color: var(--ed-accent, var(--interactive-accent-hover));
+    text-decoration: underline;
+    text-shadow: 0 0 6px color-mix(in srgb, var(--ed-accent, #00b4d8) 30%, transparent);
 }
 
 /* 5. Typography Hierarchy */
 
 /* Calendar System Title */
-.multi-calendar-card .card-system-name {
-    font-size: 0.72em !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.08em !important;
-    color: var(--text-muted) !important;
-    opacity: 0.85 !important;
+.eleven-days-root .multi-calendar-card .card-system-name {
+    font-size: 0.72em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    opacity: 0.85;
 }
 
 /* Giant Central Date Value */
-.multi-calendar-card .card-date-val {
-    font-size: 1.55em !important;
-    font-weight: 700 !important;
-    color: var(--text-normal) !important;
-    font-family: 'EsotericNumbers', 'Georgia', serif !important;
-    line-height: 1.1 !important;
-    margin: 4px 0 !important;
+.eleven-days-root .multi-calendar-card .card-date-val {
+    font-size: 1.55em;
+    font-weight: 700;
+    color: var(--text-normal);
+    font-family: 'EsotericNumbers', 'Georgia', serif;
+    line-height: 1.1;
+    margin: 4px 0;
 }
 
 /* Horizontal alignment adjust for featured date value */
-.featured-card .card-date-val {
-    font-size: 1.6em !important;
-    margin: 0 !important;
-    white-space: nowrap !important;
+.eleven-days-root .featured-card .card-date-val {
+    font-size: 1.6em;
+    margin: 0;
+    white-space: nowrap;
 }
 
 /* Month and Year Subtitle */
-.multi-calendar-card .card-month-year {
-    font-size: 0.82em !important;
-    font-weight: 600 !important;
-    color: var(--text-normal) !important;
-    opacity: 0.85 !important;
-    font-family: 'Cambria', serif !important;
-    line-height: 1.2 !important;
-    margin-top: 2px !important;
+.eleven-days-root .multi-calendar-card .card-month-year {
+    font-size: 0.82em;
+    font-weight: 600;
+    color: var(--text-normal);
+    opacity: 0.85;
+    font-family: 'Cambria', serif;
+    line-height: 1.2;
+    margin-top: 2px;
 }
 
 /* 6. Holiday Badges */
-.multi-calendar-card .card-holiday-badge {
-    margin-top: 6px !important;
-    font-size: 0.66em !important;
-    padding: 1px 6px !important;
-    background-color: color-mix(in srgb, var(--card-accent, var(--ed-accent, #00b4d8)) 8%, transparent) !important;
-    border: 1px solid color-mix(in srgb, var(--card-accent, var(--ed-accent, #00b4d8)) 18%, transparent) !important;
-    border-radius: 4px !important;
-    color: var(--card-accent, var(--ed-accent, var(--interactive-accent-hover))) !important;
-    font-style: italic !important;
-    width: 90% !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    text-align: center !important;
+.eleven-days-root .multi-calendar-card .card-holiday-badge {
+    margin-top: 6px;
+    font-size: 0.66em;
+    padding: 1px 6px;
+    background-color: color-mix(in srgb, var(--card-accent, var(--ed-accent, #00b4d8)) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--card-accent, var(--ed-accent, #00b4d8)) 18%, transparent);
+    border-radius: 4px;
+    color: var(--card-accent, var(--ed-accent, var(--interactive-accent-hover)));
+    font-style: italic;
+    width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
 }
 
 /* Featured row holiday styling */
-.featured-card .card-holiday-badge {
-    margin-top: 0 !important;
-    width: auto !important;
-    max-width: 400px !important;
-    background-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 8%, transparent) !important;
-    border-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 20%, transparent) !important;
+.eleven-days-root .featured-card .card-holiday-badge {
+    margin-top: 0;
+    width: auto;
+    max-width: 400px;
+    background-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 8%, transparent);
+    border-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 20%, transparent);
 }
 
-.multi-calendar-card:hover .card-holiday-badge {
-    background-color: color-mix(in srgb, var(--card-accent, var(--ed-accent, #00b4d8)) 15%, transparent) !important;
-    border-color: color-mix(in srgb, var(--card-accent, var(--ed-accent, #00b4d8)) 30%, transparent) !important;
-    color: var(--text-normal) !important;
+.eleven-days-root .multi-calendar-card:hover .card-holiday-badge {
+    background-color: color-mix(in srgb, var(--card-accent, var(--ed-accent, #00b4d8)) 15%, transparent);
+    border-color: color-mix(in srgb, var(--card-accent, var(--ed-accent, #00b4d8)) 30%, transparent);
+    color: var(--text-normal);
 }
 
 /* ==========================================================================
@@ -295,14 +295,14 @@
 
 /* Hidden until .showing-info lands on the featured card; the renderer only
    toggles classes + the --ed-info-accent custom property */
-.greg-info-content {
-    display: none !important;
-    grid-template-columns: 1fr 2.5fr 1fr !important;
-    align-items: center !important;
-    width: 100% !important;
-    text-align: left !important;
-    gap: 12px !important;
-    animation: fadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+.eleven-days-root .greg-info-content {
+    display: none;
+    grid-template-columns: 1fr 2.5fr 1fr;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+    gap: 12px;
+    animation: fadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes fadeIn {
@@ -310,69 +310,69 @@
     to { opacity: 1; transform: scale(1); }
 }
 
-.multi-calendar-card.featured-card.showing-info .greg-info-content {
-    display: grid !important;
+.eleven-days-root .multi-calendar-card.featured-card.showing-info .greg-info-content {
+    display: grid;
 }
 
-.multi-calendar-card.featured-card.showing-info .greg-default-content {
-    display: none !important;
+.eleven-days-root .multi-calendar-card.featured-card.showing-info .greg-default-content {
+    display: none;
 }
 
 /* The clicked system's accent wraps the banner while its info shows */
-.multi-calendar-card.featured-card.showing-info {
-    border-style: solid !important;
-    border-color: var(--ed-info-accent, var(--interactive-accent)) !important;
-    box-shadow: 0 0 10px 1px color-mix(in srgb, var(--ed-info-accent, #00b4d8) 25%, transparent) !important;
+.eleven-days-root .multi-calendar-card.featured-card.showing-info {
+    border-style: solid;
+    border-color: var(--ed-info-accent, var(--interactive-accent));
+    box-shadow: 0 0 10px 1px color-mix(in srgb, var(--ed-info-accent, #00b4d8) 25%, transparent);
 }
 
-.greg-info-content .info-left {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
+.eleven-days-root .greg-info-content .info-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.greg-info-content .info-system-name {
-    font-size: 0.85em !important;
-    font-weight: 750 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.08em !important;
-    color: var(--text-normal) !important;
-    line-height: 1.1 !important;
+.eleven-days-root .greg-info-content .info-system-name {
+    font-size: 0.85em;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-normal);
+    line-height: 1.1;
 }
 
-.greg-info-content .info-center {
-    font-family: 'Cambria', serif !important;
-    font-size: 0.82em !important;
-    color: var(--text-normal) !important;
-    line-height: 1.35 !important;
-    text-align: center !important;
-    border-left: 1px dashed rgba(255, 255, 255, 0.15) !important;
-    border-right: 1px dashed rgba(255, 255, 255, 0.15) !important;
-    padding: 0 16px !important;
+.eleven-days-root .greg-info-content .info-center {
+    font-family: 'Cambria', serif;
+    font-size: 0.82em;
+    color: var(--text-normal);
+    line-height: 1.35;
+    text-align: center;
+    border-left: 1px dashed rgba(255, 255, 255, 0.15);
+    border-right: 1px dashed rgba(255, 255, 255, 0.15);
+    padding: 0 16px;
 }
 
-.greg-info-content .info-right {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-end !important;
-    justify-content: center !important;
-    text-align: right !important;
+.eleven-days-root .greg-info-content .info-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    text-align: right;
 }
 
-.greg-info-content .info-abbrev {
-    font-size: 0.85em !important;
-    font-weight: 750 !important;
-    color: var(--interactive-accent) !important;
-    line-height: 1.1 !important;
-    text-transform: uppercase !important;
+.eleven-days-root .greg-info-content .info-abbrev {
+    font-size: 0.85em;
+    font-weight: 750;
+    color: var(--interactive-accent);
+    line-height: 1.1;
+    text-transform: uppercase;
 }
 
-.greg-info-content .info-long-name {
-    font-size: 0.72em !important;
-    color: var(--text-muted) !important;
-    font-weight: 600 !important;
-    margin-top: 3px !important;
-    line-height: 1.15 !important;
+.eleven-days-root .greg-info-content .info-long-name {
+    font-size: 0.72em;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-top: 3px;
+    line-height: 1.15;
 }
 
 /* ==========================================================================
@@ -382,13 +382,13 @@
    override --card-accent inline from the renderer.
    ========================================================================== */
 
-.multi-calendar-card:not(.featured-card) {
-    border-left: 2px solid var(--card-accent, transparent) !important;
-    cursor: pointer !important;
+.eleven-days-root .multi-calendar-card:not(.featured-card) {
+    border-left: 2px solid var(--card-accent, transparent);
+    cursor: pointer;
 }
 
 /* Gregorian (Theme Default Cyan Accent) */
-.multi-calendar-card[data-calendar="gregorian"] {
+.eleven-days-root .multi-calendar-card[data-calendar="gregorian"] {
     --card-hover-border: rgba(0, 180, 216, 0.6);
     --card-hover-glow: rgba(0, 180, 216, 0.2);
 }
@@ -396,35 +396,35 @@
 /* ROW 1: Warm Hues (Gold -> Coral -> Red -> Magenta -> Violet) */
 
 /* 1. Illuminati (Gold/Amber) */
-.multi-calendar-card[data-calendar="illuminati"] {
+.eleven-days-root .multi-calendar-card[data-calendar="illuminati"] {
     --card-accent: #d97706;
     --card-hover-border: #f59e0b;
     --card-hover-glow: rgba(245, 158, 11, 0.15);
 }
 
 /* 2. Chinese (Coral/Deep Pink-Red) */
-.multi-calendar-card[data-calendar="chinese"] {
+.eleven-days-root .multi-calendar-card[data-calendar="chinese"] {
     --card-accent: #e11d48;
     --card-hover-border: #fb7185;
     --card-hover-glow: rgba(251, 113, 133, 0.15);
 }
 
 /* 3. Thelemic (Scarlet Red) */
-.multi-calendar-card[data-calendar="thelemic"] {
+.eleven-days-root .multi-calendar-card[data-calendar="thelemic"] {
     --card-accent: #dc2626;
     --card-hover-border: #ef4444;
     --card-hover-glow: rgba(239, 68, 68, 0.15);
 }
 
 /* 4. Erisian (Discordian Magenta) */
-.multi-calendar-card[data-calendar="erisian"] {
+.eleven-days-root .multi-calendar-card[data-calendar="erisian"] {
     --card-accent: #db2777;
     --card-hover-border: #ec4899;
     --card-hover-glow: rgba(236, 72, 153, 0.15);
 }
 
 /* 5. Poundian (Violet/Lavender) */
-.multi-calendar-card[data-calendar="poundian"] {
+.eleven-days-root .multi-calendar-card[data-calendar="poundian"] {
     --card-accent: #7c3aed;
     --card-hover-border: #a78bfa;
     --card-hover-glow: rgba(167, 139, 250, 0.15);
@@ -433,35 +433,35 @@
 /* ROW 2: Cool Hues (Royal Blue -> Sky Blue -> Emerald -> Forest Green -> Lime) */
 
 /* 6. French Revolutionary (Indigo/Royal Blue) */
-.multi-calendar-card[data-calendar="frenchRev"] {
+.eleven-days-root .multi-calendar-card[data-calendar="frenchRev"] {
     --card-accent: #2563eb;
     --card-hover-border: #3b82f6;
     --card-hover-glow: rgba(59, 130, 246, 0.15);
 }
 
 /* 7. Hebrew (Sky Blue/Silver) */
-.multi-calendar-card[data-calendar="hebrew"] {
+.eleven-days-root .multi-calendar-card[data-calendar="hebrew"] {
     --card-accent: #0284c7;
     --card-hover-border: #38bdf8;
     --card-hover-glow: rgba(56, 189, 248, 0.15);
 }
 
 /* 8. Pataphysical (Emerald Green) */
-.multi-calendar-card[data-calendar="pataphysical"] {
+.eleven-days-root .multi-calendar-card[data-calendar="pataphysical"] {
     --card-accent: #059669;
     --card-hover-border: #10b981;
     --card-hover-glow: rgba(16, 185, 129, 0.15);
 }
 
 /* 9. Islamic (Forest Green) */
-.multi-calendar-card[data-calendar="islamic"] {
+.eleven-days-root .multi-calendar-card[data-calendar="islamic"] {
     --card-accent: #16a34a;
     --card-hover-border: #22c55e;
     --card-hover-glow: rgba(34, 197, 94, 0.15);
 }
 
 /* 10. Mayan (Jungle Lime Green) */
-.multi-calendar-card[data-calendar="mayan"] {
+.eleven-days-root .multi-calendar-card[data-calendar="mayan"] {
     --card-accent: #65a30d;
     --card-hover-border: #84cc16;
     --card-hover-glow: rgba(132, 204, 22, 0.15);
@@ -471,10 +471,10 @@
    🧱 9. Main Layout Wrapper (Resolves Layout Shift/Scroll Jumping)
    ========================================================================== */
 .multi-calendar-main-wrapper {
-    display: block !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
     min-height: 270px; /* Reserves standard height on desktop to prevent container collapse */
     content-visibility: auto; /* Skip layout & rendering of elements off-screen */
     contain-intrinsic-size: auto 270px; /* Use estimated height of 270px when off-screen */
@@ -494,36 +494,36 @@
 
 /* `float: true` fence arg pins the calendar to the top of the scroll view */
 .eleven-days-float {
-    position: sticky !important;
-    top: 0 !important;
-    z-index: 50 !important;
-    background-color: var(--background-primary) !important;
-    padding-bottom: 4px !important;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: var(--background-primary);
+    padding-bottom: 4px;
 }
 
 /* Engine-failure fallback keeps navigation alive */
-.eleven-days-fallback {
-    justify-content: center !important;
-    gap: 20px !important;
-    min-height: 52px !important;
-    width: 100% !important;
+.eleven-days-root .eleven-days-fallback {
+    justify-content: center;
+    gap: 20px;
+    min-height: 52px;
+    width: 100%;
 }
 
 .eleven-days-fallback .nav-arrow-left,
-.eleven-days-fallback .nav-arrow-right {
-    font-size: 1.2em !important;
+.eleven-days-root .eleven-days-fallback .nav-arrow-right {
+    font-size: 1.2em;
 }
 
-.eleven-days-fallback-date {
-    font-weight: bold !important;
-    font-size: 1.1em !important;
+.eleven-days-root .eleven-days-fallback-date {
+    font-weight: bold;
+    font-size: 1.1em;
 }
 
-.eleven-days-fallback-msg {
-    font-size: 0.75em !important;
-    color: var(--text-muted) !important;
-    margin-top: 6px !important;
-    text-align: center !important;
+.eleven-days-root .eleven-days-fallback-msg {
+    font-size: 0.75em;
+    color: var(--text-muted);
+    margin-top: 6px;
+    text-align: center;
 }
 
 /* Quick-add holiday modal */

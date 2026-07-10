@@ -190,6 +190,10 @@ export class ElevenDaysSettingTab extends PluginSettingTab {
 	}
 
 	display(): void {
+		this.render();
+	}
+
+	private render(): void {
 		const { containerEl } = this;
 		const s = this.plugin.settings;
 		containerEl.empty();
@@ -308,7 +312,7 @@ export class ElevenDaysSettingTab extends PluginSettingTab {
 					const bucket = (s.holidays[newDate] = s.holidays[newDate] ?? []);
 					if (!bucket.includes(newLabel)) bucket.push(newLabel);
 					await this.plugin.saveSettings();
-					this.display();
+					this.render();
 				})
 			);
 
@@ -342,7 +346,7 @@ export class ElevenDaysSettingTab extends PluginSettingTab {
 						const added = mergeHolidays(s.holidays, JSON.parse(raw) as HolidayMap);
 						await this.plugin.saveSettings();
 						new Notice(`Imported ${added} event${added === 1 ? "" : "s"}.`);
-						this.display();
+						this.render();
 					} catch (e) {
 						console.error("Eleven Days: holiday import failed", e);
 						new Notice("Import failed — check the path and JSON shape.");

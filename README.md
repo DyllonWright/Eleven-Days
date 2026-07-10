@@ -112,6 +112,8 @@ The ‹ › arrows jump between daily notes **by the date in the filename, not a
 
 The live folder and date format auto-detect from the core **Daily Notes** plugin or **Periodic Notes**; every path can be overridden in settings, and the whole navigation layer switches off cleanly if you move through notes some other way.
 
+*Privacy note:* the archive fallback lists vault file **paths** (via `getMarkdownFiles`) to match filenames — it never reads note contents, and nothing leaves your vault (the plugin makes no network requests).
+
 ## Settings
 
 - Daily-note folder and date format (blank = auto-detect)
