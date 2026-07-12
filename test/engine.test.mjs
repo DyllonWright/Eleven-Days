@@ -121,5 +121,25 @@ console.log("\n— Defensive sweep: every calendar finite & non-empty, 1700-2300
   eq(`Defensive sweep (${n} dates × 11 calendars, 0 broken)`, bad, 0);
 }
 
+console.log("\n— Moon phase (Meeus new-moon series; illumination 0=new, 1=full) —");
+// Mirrors src/moon.ts: sample noon UT, read position between bracketing new
+// moons. Anchored to well-known Jan-2000 phases (UT): new Jan 6, first-qtr
+// Jan 14, full Jan 21, last-qtr Jan 28.
+const moonIllum = (y, m, d) => {
+  const jd = C.JDN(rd(y, m, d)) + 0.5;
+  const prev = C.newMoonBefore(jd);
+  const next = C.newMoonAtOrAfter(jd);
+  return (1 - Math.cos(2 * Math.PI * ((jd - prev) / (next - prev)))) / 2;
+};
+near("Illumination 2000-01-06 (new)", moonIllum(2000, 1, 6), 0, 0.05);
+near("Illumination 2000-01-14 (first quarter)", moonIllum(2000, 1, 14), 0.5, 0.1);
+near("Illumination 2000-01-21 (full)", moonIllum(2000, 1, 21), 1, 0.05);
+near("Illumination 2000-01-28 (last quarter)", moonIllum(2000, 1, 28), 0.5, 0.1);
+// Full moon reuses the engine's new-moon series at k+0.5 (Meeus shares the
+// table for new & full). k=0 is the 2000-01-06 new moon, so k=0.5 is 2000-01-21.
+const jdToDate = (jde) => C.gregFromRD(Math.floor(jde - 1721424.5)).join("-");
+eq("New moon k=0 date", jdToDate(C.nthNewMoon(0)), "2000-1-6");
+eq("Full moon k=0.5 date", jdToDate(C.nthNewMoon(0.5)), "2000-1-21");
+
 console.log(`\n${fail === 0 ? "ALL PASS" : "FAILURES"}: ${pass} passed, ${fail} failed`);
 process.exit(fail === 0 ? 0 : 1);

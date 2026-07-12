@@ -12,6 +12,8 @@ import {
 	withAlpha
 } from "./calendars";
 import { effectiveDailyConfig, resolveDateNote } from "./nav";
+import { moonInfo } from "./moon";
+import type { MoonEvent, MoonInfo } from "./moon";
 import { HolidayModal } from "./settings";
 import type ElevenDaysPlugin from "./main";
 
@@ -20,12 +22,14 @@ interface BlockArgs {
 	float: boolean;
 	nav: boolean;
 	weekly: boolean;
+	moon: boolean;
 	style?: string;
 	color?: string;
 }
 
 /** Fence body accepts simple "key: value" lines — date, float, nav, weekly,
- * style (spectrum | mono | warm-cool | weekday), color (hex, for mono). */
+ * style (spectrum | mono | warm-cool | weekday), color (hex, for mono),
+ * moon. */
 function parseArgs(source: string): BlockArgs {
 	const raw: Record<string, string> = {};
 	for (const line of source.split("\n")) {
@@ -39,6 +43,7 @@ function parseArgs(source: string): BlockArgs {
 		float: flag(raw["float"], false),
 		nav: flag(raw["nav"], true),
 		weekly: flag(raw["weekly"], true),
+		moon: flag(raw["moon"], true),
 		style: raw["style"],
 		color: raw["color"]
 	};
@@ -124,6 +129,7 @@ export class CalendarBlock extends MarkdownRenderChild {
 
 		const navOn = s.navEnabled && this.args.nav;
 		const weeklyOn = s.weeklyEnabled && this.args.weekly && s.weeklyFolder.trim() !== "";
+		const moonOn = s.moonEnabled && this.args.moon;
 
 		// Nav resolves at CLICK time so it always sees the current file layout;
 		// the same resolution runs at render time only to feed hover previews
@@ -195,6 +201,11 @@ export class CalendarBlock extends MarkdownRenderChild {
 
 		const right = gregDefault.createDiv({ cls: "featured-right" });
 		right.createDiv({ cls: "featured-year", text: greg.year });
+		if (moonOn) {
+			const [my, mo, md] = dateStr.split("-").map(Number);
+			const info = moonInfo(my, mo, md);
+			if (info) this.renderMoon(featuredWrapper, right, info);
+		}
 		if (weeklyOn) {
 			const weekEl = right.createDiv({ cls: "featured-week" });
 			const weekPath = normalizePath(
@@ -293,5 +304,85 @@ export class CalendarBlock extends MarkdownRenderChild {
 				}
 			});
 		}
+	}
+
+	/** Small moon-phase glyph on the featured card; clicking it expands an inline
+	 * panel (below the featured card, normal flow — no clipping against the
+	 * wrapper's paint containment) with the current phase plus the principal
+	 * phases just past and coming up. */
+	private renderMoon(featuredWrapper: HTMLElement, right: HTMLElement, info: MoonInfo): void {
+		const { phase } = info;
+		const pct = Math.round(phase.illumination * 100);
+
+		const moonEl = right.createDiv({ cls: "featured-moon" });
+		const btn = moonEl.createEl("button", { cls: "featured-moon-btn", text: phase.emoji });
+		btn.setAttribute("aria-label", `${phase.name}, ${pct}% illuminated — show the lunar cycle`);
+		btn.title = `${phase.name} · ${pct}% lit — click for the cycle`;
+
+		const panel = featuredWrapper.createDiv({ cls: "featured-moon-panel" });
+
+		// Left: the current phase at a glance.
+		const now = panel.createDiv({ cls: "moon-panel-now" });
+		now.createSpan({ cls: "moon-now-glyph", text: phase.emoji });
+		const nowText = now.createDiv({ cls: "moon-now-text" });
+		nowText.createDiv({ cls: "moon-now-name", text: phase.name });
+		nowText.createDiv({ cls: "moon-now-illum", text: `${pct}% illuminated` });
+		nowText.createDiv({
+			cls: "moon-now-age",
+			text: `Day ${phase.ageDays.toFixed(1)} of ~29.5`
+		});
+
+		// Right: recent + upcoming principal phases.
+		const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+		const refYear = this.renderedDate.slice(0, 4);
+		const fmtDate = (e: MoonEvent): string => {
+			const base = `${MONTHS[e.month - 1]} ${e.day}`;
+			return String(e.year) === refYear ? base : `${base}, ${e.year}`;
+		};
+		const rel = (d: number): string =>
+			d === 0 ? "today" : d === 1 ? "tomorrow" : d === -1 ? "yesterday" : d > 0 ? `in ${d} days` : `${-d} days ago`;
+
+		const past = info.events.filter((e) => e.daysFromRef < 0);
+		const future = info.events.filter((e) => e.daysFromRef >= 0);
+		const shown: MoonEvent[] = [...past.slice(-1), ...future.slice(0, 4)];
+
+		const list = panel.createDiv({ cls: "moon-panel-events" });
+		let nextMarked = false;
+		for (const e of shown) {
+			const isFuture = e.daysFromRef >= 0;
+			const cls = ["moon-ev-row", isFuture ? "is-future" : "is-past"];
+			if (!nextMarked && isFuture) cls.push("is-next");
+			const row = list.createDiv({ cls });
+			if (isFuture) nextMarked = true;
+			row.createSpan({ cls: "ev-emoji", text: e.emoji });
+			const mid = row.createDiv({ cls: "ev-mid" });
+			mid.createDiv({ cls: "ev-name", text: e.name });
+			mid.createDiv({ cls: "ev-date", text: fmtDate(e) });
+			row.createSpan({ cls: "ev-when", text: rel(e.daysFromRef) });
+		}
+
+		let open = false;
+		const closePanel = () => {
+			panel.removeClass("is-open");
+			btn.removeClass("is-active");
+			open = false;
+		};
+		btn.addEventListener("click", (e) => {
+			e.preventDefault();
+			e.stopPropagation();
+			if (open) {
+				closePanel();
+			} else {
+				panel.addClass("is-open");
+				btn.addClass("is-active");
+				open = true;
+			}
+		});
+		// A click anywhere outside the panel or its trigger collapses it.
+		this.registerDomEvent(document, "mousedown", (ev: MouseEvent) => {
+			if (!open) return;
+			const t = ev.target as Node;
+			if (!panel.contains(t) && !btn.contains(t)) closePanel();
+		});
 	}
 }

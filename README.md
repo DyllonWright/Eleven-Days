@@ -6,7 +6,7 @@ An [Obsidian](https://obsidian.md) plugin that shows any date across **eleven ca
 
 👁️ Anno Lucis · 🍎 Discordian · 🌀 'Pataphysical · 🏛️ Poundian · 👑 Thelemic · 🐓 French Revolutionary · 🌙 Islamic · 🐉 Chinese · ☀️ Mayan · 🕎 Hebrew
 
-Drop one code fence into a note and today fans out into eleven todays. Click any card to read that calendar's story. Add your own annual holidays. If you keep daily notes, the arrows walk you day to day — even after you've archived old notes into nested folders.
+Drop one code fence into a note and today fans out into eleven todays. Click any card to read that calendar's story. Add your own annual holidays. The featured card carries a small **moon phase** glyph — click it to unfold the lunar cycle: tonight's phase and illumination, plus the recent and upcoming new moons, quarters, and full moons with dates. If you keep daily notes, the arrows walk you day to day — even after you've archived old notes into nested folders.
 
 ## Why eleven calendars?
 
@@ -83,13 +83,14 @@ color: #8b7cf6
 float: true
 nav: false
 weekly: false
+moon: false
 ```
 ````
 
 - `date:` — pin the block to a date (`YYYY-MM-DD`). Without it, a daily note shows *its own* day (parsed from the filename); any other note shows today and rolls over at midnight.
 - `style:` / `color:` — override the color style for this block (see below).
 - `float: true` — stick the calendar to the top of the scroll view.
-- `nav: false` / `weekly: false` — hide the arrows or the weekly link for this block.
+- `nav: false` / `weekly: false` / `moon: false` — hide the arrows, the weekly link, or the moon phase for this block.
 
 `11days` and `calendar` work as fence aliases, and the command palette offers **Insert calendar block**. Click any small card to swap its mythos into the featured banner; the **+** button adds an annual event for that day.
 
@@ -119,6 +120,7 @@ The live folder and date format auto-detect from the core **Daily Notes** plugin
 - Daily-note folder and date format (blank = auto-detect)
 - Archive root, searched recursively
 - Weekly-note folder + format, with its own toggle
+- Moon phase on the featured card, with its own toggle (or `moon: false` per block)
 - Color style + mono base color
 - Personal holidays: add / remove annual events, or bulk-import from a JSON file shaped like `{"MM-DD": ["Event", …]}`
 - First-run setup, re-openable any time

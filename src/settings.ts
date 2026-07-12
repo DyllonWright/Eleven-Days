@@ -19,6 +19,8 @@ export interface ElevenDaysSettings {
 	weeklyFolder: string;
 	/** Weekly-note filename format (moment). */
 	weeklyFormat: string;
+	/** Show the day's moon phase on the featured card. */
+	moonEnabled: boolean;
 	/** Personal annual holidays keyed by "MM-DD". */
 	holidays: HolidayMap;
 	/** Card tinting: per-system spectrum, mono palette, warm/cool rows, or a
@@ -37,6 +39,7 @@ export const DEFAULT_SETTINGS: ElevenDaysSettings = {
 	weeklyEnabled: true,
 	weeklyFolder: "",
 	weeklyFormat: "gggg-[W]ww",
+	moonEnabled: true,
 	holidays: {},
 	colorStyle: "spectrum",
 	accentColor: "#8b7cf6",
@@ -253,6 +256,14 @@ export class ElevenDaysSettingTab extends PluginSettingTab {
 			.setDesc("Moment format for weekly filenames.")
 			.addText((t) => t.setPlaceholder("gggg-[W]ww").setValue(s.weeklyFormat).onChange(async (v) => {
 				s.weeklyFormat = v.trim() || "gggg-[W]ww";
+				await this.plugin.saveSettings();
+			}));
+
+		new Setting(containerEl)
+			.setName("Moon phase")
+			.setDesc("Show the day's moon phase on the featured card. Hide it per-block with `moon: false` in the fence.")
+			.addToggle((t) => t.setValue(s.moonEnabled).onChange(async (v) => {
+				s.moonEnabled = v;
 				await this.plugin.saveSettings();
 			}));
 

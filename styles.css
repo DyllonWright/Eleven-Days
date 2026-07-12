@@ -119,11 +119,187 @@
     line-height: 1.1;
 }
 
+/* Moon-phase glyph on the featured card (year column) — a small emoji that
+   expands the lunar-cycle popover on click. */
+.eleven-days-root .featured-moon {
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    line-height: 1;
+    min-width: 0;
+}
+
+.eleven-days-root .featured-moon-btn {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0 2px;
+    margin: 0;
+    cursor: pointer;
+    font-size: 1.05em;
+    line-height: 1;
+    border-radius: 4px;
+    transition: filter 0.2s ease, transform 0.2s ease;
+    filter: drop-shadow(0 0 3px color-mix(in srgb, var(--ed-accent, #00b4d8) 35%, transparent));
+}
+
+.eleven-days-root .featured-moon-btn:hover,
+.eleven-days-root .featured-moon-btn.is-active {
+    transform: translateY(-1px) scale(1.08);
+    filter: drop-shadow(0 0 7px color-mix(in srgb, var(--ed-accent, #00b4d8) 60%, transparent));
+}
+
+/* --- Lunar-cycle panel (inline expander below the featured card) --------- */
+.eleven-days-root .featured-moon-panel {
+    display: none;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0 0 8px 0;
+    padding: 12px 16px;
+    gap: 16px;
+    align-items: stretch;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--ed-accent, #00b4d8) 5%, var(--background-secondary, #10121a));
+    border: 1px solid color-mix(in srgb, var(--ed-accent, #00b4d8) 28%, transparent);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+    animation: fadeIn 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.eleven-days-root .featured-moon-panel.is-open {
+    display: flex;
+}
+
+/* Left — the phase right now */
+.eleven-days-root .moon-panel-now {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-right: 16px;
+    border-right: 1px solid color-mix(in srgb, var(--ed-accent, #00b4d8) 20%, transparent);
+    flex: 0 0 auto;
+    min-width: 0;
+}
+
+.eleven-days-root .moon-now-glyph {
+    font-size: 2.4em;
+    line-height: 1;
+    filter: drop-shadow(0 0 7px color-mix(in srgb, var(--ed-accent, #00b4d8) 45%, transparent));
+}
+
+.eleven-days-root .moon-now-text {
+    min-width: 0;
+}
+
+.eleven-days-root .moon-now-name {
+    font-weight: 700;
+    font-size: 0.9em;
+    color: var(--text-normal);
+    line-height: 1.2;
+}
+
+.eleven-days-root .moon-now-illum {
+    font-size: 0.78em;
+    color: var(--text-muted);
+    margin-top: 1px;
+}
+
+.eleven-days-root .moon-now-age {
+    font-size: 0.72em;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 1px;
+}
+
+/* Right — recent + upcoming principal phases */
+.eleven-days-root .moon-panel-events {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.eleven-days-root .moon-ev-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.eleven-days-root .moon-ev-row.is-past {
+    opacity: 0.5;
+}
+
+.eleven-days-root .moon-ev-row .ev-emoji {
+    font-size: 1.1em;
+    line-height: 1;
+}
+
+.eleven-days-root .moon-ev-row .ev-mid {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.eleven-days-root .moon-ev-row .ev-name {
+    font-size: 0.8em;
+    font-weight: 600;
+    color: var(--text-normal);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.eleven-days-root .moon-ev-row.is-next .ev-name {
+    color: var(--ed-accent, var(--interactive-accent));
+}
+
+.eleven-days-root .moon-ev-row .ev-date {
+    font-size: 0.72em;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.eleven-days-root .moon-ev-row .ev-when {
+    font-size: 0.72em;
+    color: var(--text-muted);
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Stack the panel's two halves on narrow phones */
+@media (max-width: 480px) {
+    .eleven-days-root .moon-panel-now {
+        padding-right: 0;
+        padding-bottom: 10px;
+        border-right: none;
+        border-bottom: 1px solid color-mix(in srgb, var(--ed-accent, #00b4d8) 20%, transparent);
+    }
+
+    .eleven-days-root .featured-moon-panel.is-open {
+        flex-direction: column;
+    }
+}
+
 .eleven-days-root .featured-holiday-row {
     grid-area: holiday;
     width: 100%;
     display: flex;
     justify-content: center;
+    min-width: 0;
+}
+
+/* Grid tracks default to min-width:auto and refuse to shrink below their
+   content — that is what pushes the featured card (nowrap date + year) off the
+   right edge on narrow phones. Let every column shrink instead. */
+.eleven-days-root .featured-left,
+.eleven-days-root .featured-center,
+.eleven-days-root .featured-right {
+    min-width: 0;
 }
 
 .eleven-days-root .multi-calendar-card.featured-card:hover {
@@ -325,6 +501,12 @@
     box-shadow: 0 0 10px 1px color-mix(in srgb, var(--ed-info-accent, #00b4d8) 25%, transparent);
 }
 
+.eleven-days-root .greg-info-content .info-left,
+.eleven-days-root .greg-info-content .info-center,
+.eleven-days-root .greg-info-content .info-right {
+    min-width: 0;
+}
+
 .eleven-days-root .greg-info-content .info-left {
     display: flex;
     flex-direction: column;
@@ -473,6 +655,9 @@
 .multi-calendar-main-wrapper {
     display: block;
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: clip; /* backstop: the min-width:0 fixes are the real cure */
     margin: 0;
     padding: 0;
     min-height: 270px; /* Reserves standard height on desktop to prevent container collapse */
@@ -485,6 +670,67 @@
     .multi-calendar-main-wrapper {
         min-height: 480px;
         contain-intrinsic-size: auto 480px;
+    }
+
+    /* A long holiday name must never drive the card wider than the screen */
+    .eleven-days-root .featured-card .card-holiday-badge {
+        max-width: 100%;
+        white-space: normal;
+    }
+}
+
+/* Narrow phones: stack the featured card and its info panel so the date wraps
+   instead of running off the right edge. */
+@media (max-width: 480px) {
+    .multi-calendar-main-wrapper {
+        min-height: 540px;
+        contain-intrinsic-size: auto 540px;
+    }
+
+    .eleven-days-root .greg-default-content {
+        grid-template-columns: 1fr;
+        grid-template-areas: "left" "center" "right";
+        row-gap: 6px;
+        justify-items: center;
+    }
+
+    .eleven-days-root .multi-calendar-card.featured-card.has-holiday .greg-default-content {
+        grid-template-areas: "left" "center" "right" "holiday";
+    }
+
+    .eleven-days-root .featured-left,
+    .eleven-days-root .featured-right {
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .eleven-days-root .featured-moon {
+        justify-content: center;
+    }
+
+    .eleven-days-root .featured-card .card-date-val {
+        white-space: normal;
+        font-size: 1.35em;
+        text-align: center;
+    }
+
+    /* Swappable mythos panel: three columns are too tight — stack them */
+    .eleven-days-root .greg-info-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 6px;
+    }
+
+    .eleven-days-root .greg-info-content .info-center {
+        border-left: none;
+        border-right: none;
+        padding: 6px 0;
+    }
+
+    .eleven-days-root .greg-info-content .info-right {
+        align-items: center;
+        text-align: center;
     }
 }
 
