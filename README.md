@@ -8,6 +8,8 @@ An [Obsidian](https://obsidian.md) plugin that shows any date across **eleven ca
 
 Drop one code fence into a note and today fans out into eleven todays. Click any card to read that calendar's story. The featured card carries a small **moon phase** glyph — click it to unfold the lunar cycle: tonight's phase and illumination, plus the recent and upcoming new moons, quarters, and full moons with dates — and a **zodiac chip** that opens onto the Sun, Moon, and all eight planets moving through the tropical zodiac, retrogrades and rare events (eclipses, supermoons, meteor showers, a comet almanac) included. The **+** button opens the Wheel of the Year, a full 12×31 grid for browsing and adding your own annual holidays. If you keep daily notes, the arrows walk you day to day — even after you've archived old notes into nested folders.
 
+![Eleven calendar systems in one block, spectrum-tinted](screenshots/hero.png)
+
 ## Why eleven calendars?
 
 The name honors a chapter of Robert Anton Wilson's *Cosmic Trigger*, "How to Live Eleven Days in 24 Hours." Wilson liked to date his writing in half a dozen calendars at once — Gregorian, Discordian, Thelemic, Hebrew, Chinese, and onward — not as a party trick but as an exercise in what he called **model agnosticism**: every calendar is a *map* of time, and no map is the territory. The Gregorian date feels like plain reality until it sits next to ten alternatives, each internally consistent, each once (or still) the "obvious" reckoning for millions of people. Watch the same Tuesday register as a day in Confusion 3192, as ☉ in Cancer in the Aeon of Horus, and as 12 Wind on a 260-day sacred round, and the frame quietly loosens.
@@ -126,26 +128,23 @@ featured: thelemic
 
 `11days` and `calendar` work as fence aliases, and the command palette offers **Insert calendar block**. Click any small card to swap its mythos into the featured banner, or use the ▴▾ stepper beside the featured name. The **+** button opens the Wheel of the Year to add or browse annual holidays.
 
-## Color styles
-
-Four ways to tint the cards, set globally in settings or per-block with `style:`:
-
-- **Spectrum** (default) — each system wears its own hue, cascading warm to cool across the grid.
-- **Mono** — pick one soft color; the plugin builds a gentle palette around it (a quiet lightness ramp with a whisper of hue drift) so the grid keeps depth without shouting.
-- **Warm / cool** — the top row glows warm, the bottom row cool.
-- **Weekday** — the whole calendar re-tints each day, cycling seven colors on the classical day-planet correspondences: gold for the Sun's day, silver-blue for the Moon's, scarlet for Mars', yellow for Mercury's, violet for Jupiter's, emerald for Venus', indigo for Saturn's.
-
 ## The sky
 
-Click the zodiac chip beside the featured date to open the sky panel: the Sun and Moon's tropical zodiac signs, plus Mercury through Pluto with retrograde marks, plus Black Moon Lilith (⚸, the mean lunar apogee) and the North Node (☊) — a clean 6×2 chart with everything on. Planet and node positions come from Meeus lunar theory and JPL's approximate Keplerian elements, accurate to roughly ten arcminutes between 1800 and 2050; outside that range the panel falls back to the Sun and Moon alone.
+Two glyphs on the featured card open onto the sky. The **moon phase** glyph unfolds tonight's phase and illumination, plus the recent and upcoming new moons, quarters, and full moons with dates:
 
-A rare-event glyph rides beside the chip on days that earn one — the day's single rarest event, ranked eclipse > planet station > supermoon/micromoon > meteor shower > comet perihelion — with the specifics laid out in the panel's notable-events strip.
+![Moon phase panel: tonight's phase, illumination, and the surrounding lunar-cycle dates](screenshots/moon-panel.png)
 
-Turn any of it off in settings (or per-block with `sky: false`); planets and lunar points have their own toggles.
+The **zodiac chip** opens the full sky panel: the Sun and Moon's tropical zodiac signs, plus Mercury through Pluto with retrograde marks, plus Black Moon Lilith (⚸, the mean lunar apogee) and the North Node (☊) — a clean 6×2 chart with everything on. A rare-event glyph rides beside the chip on days that earn one — the day's single rarest event, ranked eclipse > planet station > supermoon/micromoon > meteor shower > comet perihelion — with the specifics laid out in the panel's notable-events strip:
+
+![Sky panel on a day with a rare event: total solar eclipse and the Perseids peak, both flagged](screenshots/sky-panel.png)
+
+Planet and node positions come from Meeus lunar theory and JPL's approximate Keplerian elements, accurate to roughly ten arcminutes between 1800 and 2050; outside that range the panel falls back to the Sun and Moon alone. Turn any of it off in settings (or per-block with `moon: false` / `sky: false`); planets and lunar points toggle independently.
 
 ## Wheel of the Year
 
 The **+** button opens a 12×31 grid of the whole year: every built-in feast alongside your own personal holidays, each wearing its system's glyph. Click a day to see what lands there and add or remove your own annual events inline — no need to navigate to that date first.
+
+![Wheel of the Year open on December 25, a crowded day: five systems' feasts, plus a personal event added inline](screenshots/wheel-of-the-year.png)
 
 ## Daily-note navigation (optional)
 
@@ -158,6 +157,17 @@ The ‹ › arrows jump between daily notes **by the date in the filename, not a
 The live folder and date format auto-detect from the core **Daily Notes** plugin or **Periodic Notes**; every path can be overridden in settings, and the whole navigation layer switches off cleanly if you move through notes some other way.
 
 *Privacy note:* the archive fallback lists vault file **paths** (via `getMarkdownFiles`) to match filenames — it never reads note contents, and nothing leaves your vault (the plugin makes no network requests).
+
+## Color styles
+
+Four ways to tint the cards, set globally in settings or per-block with `style:`:
+
+- **Spectrum** (default) — each system wears its own hue, cascading warm to cool across the grid.
+- **Mono** — pick one soft color; the plugin builds a gentle palette around it (a quiet lightness ramp with a whisper of hue drift) so the grid keeps depth without shouting.
+- **Warm / cool** — the top row glows warm, the bottom row cool.
+- **Weekday** — the whole calendar re-tints each day, cycling seven colors on the classical day-planet correspondences: gold for the Sun's day, silver-blue for the Moon's, scarlet for Mars', yellow for Mercury's, violet for Jupiter's, emerald for Venus', indigo for Saturn's.
+
+![All four color styles on the same date](screenshots/color-styles.png)
 
 ## Settings
 
