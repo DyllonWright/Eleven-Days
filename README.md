@@ -6,7 +6,7 @@ An [Obsidian](https://obsidian.md) plugin that shows any date across **eleven ca
 
 👁️ Anno Lucis · 🍎 Discordian · 🌀 'Pataphysical · 🏛️ Poundian · 👑 Thelemic · 🐓 French Revolutionary · 🌙 Islamic · 🐉 Chinese · ☀️ Mayan · 🕎 Hebrew
 
-Drop one code fence into a note and today fans out into eleven todays. Click any card to read that calendar's story. Add your own annual holidays. The featured card carries a small **moon phase** glyph — click it to unfold the lunar cycle: tonight's phase and illumination, plus the recent and upcoming new moons, quarters, and full moons with dates. If you keep daily notes, the arrows walk you day to day — even after you've archived old notes into nested folders.
+Drop one code fence into a note and today fans out into eleven todays. Click any card to read that calendar's story. The featured card carries a small **moon phase** glyph — click it to unfold the lunar cycle: tonight's phase and illumination, plus the recent and upcoming new moons, quarters, and full moons with dates — and a **zodiac chip** that opens onto the Sun, Moon, and all eight planets moving through the tropical zodiac, retrogrades and rare events (eclipses, supermoons, meteor showers, a comet almanac) included. The **+** button opens the Wheel of the Year, a full 12×31 grid for browsing and adding your own annual holidays. If you keep daily notes, the arrows walk you day to day — even after you've archived old notes into nested folders.
 
 ## Why eleven calendars?
 
@@ -52,7 +52,7 @@ No date libraries, no floating-point drift in the day arithmetic, and every cale
 
 ## The proof
 
-Pretty cards mean nothing if the math lies. A Node regression suite (`npm test`) pins the engine to independently known anchors, and the whole suite must stay green for any engine change to land:
+Pretty cards mean nothing if the math lies. A Node regression suite (`npm test`) pins the engine, the sky, and the rare-event calls to independently known anchors, and the whole suite must stay green for any change to land:
 
 ```mermaid
 flowchart LR
@@ -61,7 +61,9 @@ flowchart LR
     K3["Equinoxes vs published UT<br/>within ±30 minutes"] --> S
     K4["Hebrew & Islamic anchors<br/>Dershowitz–Reingold arithmetic"] --> S
     K5["Defensive sweep<br/>43,830 dates × 11 calendars, no holes"] --> S
-    E["engine.js<br/>pure integer date math"] --> S{"npm test<br/>30 assertions"}
+    K6["Kepler's third law per planet<br/>+ real conjunction/opposition dates"] --> S
+    K7["Real eclipse, supermoon & comet dates"] --> S
+    E["engine.js + astro.ts + events.ts"] --> S{"npm test<br/>95 assertions"}
     S -->|any failure| X["change rejected"]
     S -->|all green| R["ships"]
 ```
@@ -84,15 +86,21 @@ float: true
 nav: false
 weekly: false
 moon: false
+sky: false
+weekday: true
+emphasis: weekday
+featured: thelemic
 ```
 ````
 
 - `date:` — pin the block to a date (`YYYY-MM-DD`). Without it, a daily note shows *its own* day (parsed from the filename); any other note shows today and rolls over at midnight.
 - `style:` / `color:` — override the color style for this block (see below).
 - `float: true` — stick the calendar to the top of the scroll view.
-- `nav: false` / `weekly: false` / `moon: false` — hide the arrows, the weekly link, or the moon phase for this block.
+- `nav: false` / `weekly: false` / `moon: false` / `sky: false` — hide the arrows, the weekly link, the moon phase, or the zodiac chip for this block.
+- `weekday: true` / `emphasis: weekday` — lead the title with the weekday instead of the date, and choose which of the two reads largest.
+- `featured: thelemic` — pin one system into the featured banner and hide the swap arrows for this block. Any calendar key works: `gregorian`, `illuminati`, `erisian`, `pataphysical`, `poundian`, `thelemic`, `frenchRev`, `islamic`, `chinese`, `mayan`, `hebrew`.
 
-`11days` and `calendar` work as fence aliases, and the command palette offers **Insert calendar block**. Click any small card to swap its mythos into the featured banner; the **+** button adds an annual event for that day.
+`11days` and `calendar` work as fence aliases, and the command palette offers **Insert calendar block**. Click any small card to swap its mythos into the featured banner, or use the ▴▾ stepper beside the featured name. The **+** button opens the Wheel of the Year to add or browse annual holidays.
 
 ## Color styles
 
@@ -102,6 +110,18 @@ Four ways to tint the cards, set globally in settings or per-block with `style:`
 - **Mono** — pick one soft color; the plugin builds a gentle palette around it (a quiet lightness ramp with a whisper of hue drift) so the grid keeps depth without shouting.
 - **Warm / cool** — the top row glows warm, the bottom row cool.
 - **Weekday** — the whole calendar re-tints each day, cycling seven colors on the classical day-planet correspondences: gold for the Sun's day, silver-blue for the Moon's, scarlet for Mars', yellow for Mercury's, violet for Jupiter's, emerald for Venus', indigo for Saturn's.
+
+## The sky
+
+Click the zodiac chip beside the featured date to open the sky panel: the Sun and Moon's tropical zodiac signs, plus Mercury through Pluto with retrograde marks, plus Black Moon Lilith (⚸, the mean lunar apogee) and the North Node (☊) — a clean 6×2 chart with everything on. Planet and node positions come from Meeus lunar theory and JPL's approximate Keplerian elements, accurate to roughly ten arcminutes between 1800 and 2050; outside that range the panel falls back to the Sun and Moon alone.
+
+A rare-event glyph rides beside the chip on days that earn one — the day's single rarest event, ranked eclipse > planet station > supermoon/micromoon > meteor shower > comet perihelion — with the specifics laid out in the panel's notable-events strip.
+
+Turn any of it off in settings (or per-block with `sky: false`); planets and lunar points have their own toggles.
+
+## Wheel of the Year
+
+The **+** button opens a 12×31 grid of the whole year: every built-in feast alongside your own personal holidays, each wearing its system's glyph. Click a day to see what lands there and add or remove your own annual events inline — no need to navigate to that date first.
 
 ## Daily-note navigation (optional)
 
@@ -121,8 +141,11 @@ The live folder and date format auto-detect from the core **Daily Notes** plugin
 - Archive root, searched recursively
 - Weekly-note folder + format, with its own toggle
 - Moon phase on the featured card, with its own toggle (or `moon: false` per block)
+- Zodiac chip and sky panel, with its own toggle (or `sky: false` per block); planets and lunar points (Lilith + North Node) toggle independently
+- Weekday-as-title, and which line reads largest — the date or the weekday (or `weekday:` / `emphasis:` per block)
+- Featured calendar — which system leads by default (or `featured:` per block)
 - Color style + mono base color
-- Personal holidays: add / remove annual events, or bulk-import from a JSON file shaped like `{"MM-DD": ["Event", …]}`
+- Personal holidays: add / remove annual events from the Wheel of the Year, or bulk-import from a JSON file shaped like `{"MM-DD": ["Event", …]}`
 - First-run setup, re-openable any time
 
 Holidays live in the plugin's own `data.json`, so they travel with whatever syncs your vault.
@@ -137,7 +160,7 @@ Until the plugin lands in the community catalog, install with [BRAT](https://git
 npm install
 npm run dev     # esbuild watch mode
 npm run build   # typecheck + production bundle
-npm test        # engine regression suite — keep it green
+npm test        # engine + sky + rare-event regression suite — keep it green
 ```
 
 `src/engine.js` holds the calendar math and ports verbatim from its verified original; treat it as read-only unless you extend the test suite first.
