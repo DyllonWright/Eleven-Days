@@ -202,3 +202,7 @@ npm test        # engine + sky + rare-event regression suite — keep it green
 ## License
 
 MIT
+
+---
+
+*A footnote for the ones who track these things: this release carries version 0.2.3, cut on July 23. Robert Anton Wilson spent decades logging the 23 enigma — coincidences clustering around that number, a fixation he traced back to a story William S. Burroughs told him — and he read it as one thread in a wider mesh of synchronicity linking events that otherwise share no cause, the pattern* Cosmic Trigger *keeps circling. Consider the version number a small nod into that mesh.*

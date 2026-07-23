@@ -1,6 +1,6 @@
 {
 	"name": "eleven-days",
-	"version": "0.2.1",
+	"version": "0.2.3",
 	"description": "Obsidian plugin: today across eleven calendar systems, with personal holidays and archive-aware daily-note navigation.",
 	"main": "main.js",
 	"scripts": {
