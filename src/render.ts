@@ -806,12 +806,12 @@ export class CalendarBlock extends MarkdownRenderChild {
 			if (panel.hasClass("is-open")) close();
 			else open();
 		});
-		this.registerDomEvent(document, "mousedown", (ev: MouseEvent) => {
+		this.registerDomEvent(activeDocument, "mousedown", (ev: MouseEvent) => {
 			if (!panel.hasClass("is-open")) return;
 			const t = ev.target as Node;
 			if (!panel.contains(t) && !btn.contains(t)) close();
 		});
-		this.registerDomEvent(document, "keydown", (ev: KeyboardEvent) => {
+		this.registerDomEvent(activeDocument, "keydown", (ev: KeyboardEvent) => {
 			if (ev.key === "Escape" && panel.hasClass("is-open")) close();
 		});
 	}
