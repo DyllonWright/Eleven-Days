@@ -713,11 +713,13 @@ export class CalendarBlock extends MarkdownRenderChild {
 				const del = row.createEl("button", { cls: "wheel-detail-del", text: "×" });
 				del.title = `Remove "${hit.label}"`;
 				del.setAttribute("aria-label", `Remove ${hit.label}`);
-				del.addEventListener("click", async (e) => {
+				del.addEventListener("click", (e) => {
 					e.preventDefault();
 					e.stopPropagation();
-					await removeHoliday(this.plugin, mmdd, hit.label);
-					this.plugin.refreshBlocks();
+					void (async () => {
+						await removeHoliday(this.plugin, mmdd, hit.label);
+						this.plugin.refreshBlocks();
+					})();
 				});
 			}
 		}

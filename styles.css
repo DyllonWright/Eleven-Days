@@ -901,8 +901,7 @@
         "swap shelf shelf";
     align-items: center;
     justify-content: start;
-    column-gap: 7px;
-    row-gap: 4px;
+    gap: 4px 7px;
     text-align: left;
 }
 
