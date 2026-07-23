@@ -46,6 +46,18 @@ flowchart TD
     T --> CARDS
     F --> CARDS
     C --> CARDS
+
+    classDef input fill:#e2e8f0,stroke:#64748b,color:#1e293b
+    classDef hub fill:#8b7cf6,stroke:#5b21b6,color:#ffffff
+    classDef arith fill:#f5a524,stroke:#b45309,color:#1e1206
+    classDef astro fill:#38bdf8,stroke:#0369a1,color:#062033
+    classDef output fill:#34d399,stroke:#047857,color:#04120c
+
+    class D input
+    class HUB hub
+    class ARITH arith
+    class ASTRO,T,F,C astro
+    class CARDS output
 ```
 
 No date libraries, no floating-point drift in the day arithmetic, and every calendar degrades independently — if one system ever failed it would show "—" while the other ten carry on.
@@ -66,6 +78,18 @@ flowchart LR
     E["engine.js + astro.ts + events.ts"] --> S{"npm test<br/>95 assertions"}
     S -->|any failure| X["change rejected"]
     S -->|all green| R["ships"]
+
+    classDef anchor fill:#f5a524,stroke:#b45309,color:#1e1206
+    classDef source fill:#8b7cf6,stroke:#5b21b6,color:#ffffff
+    classDef gate fill:#e2e8f0,stroke:#64748b,color:#1e293b
+    classDef fail fill:#f87171,stroke:#b91c1c,color:#2a0605
+    classDef pass fill:#34d399,stroke:#047857,color:#04120c
+
+    class K1,K2,K3,K4,K5,K6,K7 anchor
+    class E source
+    class S gate
+    class X fail
+    class R pass
 ```
 
 ## Usage
