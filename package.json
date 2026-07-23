@@ -1,14 +1,18 @@
 {
 	"name": "eleven-days",
-	"version": "0.1.3",
+	"version": "0.2.0",
 	"description": "Obsidian plugin: today across eleven calendar systems, with personal holidays and archive-aware daily-note navigation.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-		"test": "node test/engine.test.mjs"
+		"test": "node test/engine.test.mjs && node test/astro.test.mjs && node test/events.test.mjs"
 	},
-	"keywords": ["obsidian", "obsidian-plugin", "calendar"],
+	"keywords": [
+		"obsidian",
+		"obsidian-plugin",
+		"calendar"
+	],
 	"author": "Dyllon Wright",
 	"license": "MIT",
 	"devDependencies": {

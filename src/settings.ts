@@ -1,8 +1,9 @@
 import { App, Modal, Notice, PluginSettingTab, Setting } from "obsidian";
 import type ElevenDaysPlugin from "./main";
-import type { HolidayMap } from "./engine";
-import type { ColorStyle } from "./calendars";
-import { detectDailyConfig } from "./nav";
+import type { CalendarKey, HolidayMap } from "./engine";
+import { ALL_CALENDARS, CALENDAR_INFO, ColorStyle, EMOJIS } from "./calendars";
+import { DEFAULT_PERSONAL_EMOJI, emojiKey } from "./holidays";
+import { detectDailyConfig, detectWeeklyConfig } from "./nav";
 
 export interface ElevenDaysSettings {
 	/** Master toggle for the prev/next daily-note arrows. */
@@ -19,10 +20,33 @@ export interface ElevenDaysSettings {
 	weeklyFolder: string;
 	/** Weekly-note filename format (moment). */
 	weeklyFormat: string;
+	/** Archive root for weekly notes; blank falls back to `archiveRoot`. */
+	weeklyArchiveRoot: string;
 	/** Show the day's moon phase on the featured card. */
 	moonEnabled: boolean;
-	/** Personal annual holidays keyed by "MM-DD". */
+	/** Show the sun/moon zodiac chip on the featured card. */
+	skyEnabled: boolean;
+	/** Include the planets in the sky panel (sun and moon show either way). */
+	planetsEnabled: boolean;
+	/** Add Black Moon Lilith and the North Node to the sky panel — the two
+	 *  lunar points that round the chart to a clean 6×2. */
+	lunarPointsEnabled: boolean;
+	/** Lead the featured card with the weekday name above the date. */
+	weekdayTitle: boolean;
+	/** With the weekday shown, which line reads largest: the weekday, or the
+	 *  date phrase beneath it. */
+	titleEmphasis: "weekday" | "date";
+	/** Which system the featured card shows; the rest fill the subgrid. */
+	featuredCalendar: CalendarKey;
+	/** Personal annual holidays keyed by "MM-DD".
+	 *
+	 * SHAPE IS LOAD-BEARING: this map goes straight into the engine, which does
+	 * `customHolidays[MM_DD].join(" / ")`. Anything other than strings renders as
+	 * "[object Object]" on every card. Per-holiday emoji therefore live in
+	 * `holidayEmoji`, never here. */
 	holidays: HolidayMap;
+	/** Emoji per personal holiday, keyed "MM-DD|label". Never seen by the engine. */
+	holidayEmoji: Record<string, string>;
 	/** Card tinting: per-system spectrum, mono palette, warm/cool rows, or a
 	 * planetary seven-day rotation. */
 	colorStyle: ColorStyle;
@@ -39,8 +63,16 @@ export const DEFAULT_SETTINGS: ElevenDaysSettings = {
 	weeklyEnabled: true,
 	weeklyFolder: "",
 	weeklyFormat: "gggg-[W]ww",
+	weeklyArchiveRoot: "",
 	moonEnabled: true,
+	skyEnabled: true,
+	planetsEnabled: true,
+	lunarPointsEnabled: true,
+	weekdayTitle: true,
+	titleEmphasis: "date",
+	featuredCalendar: "gregorian",
 	holidays: {},
+	holidayEmoji: {},
 	colorStyle: "spectrum",
 	accentColor: "#8b7cf6",
 	firstRunDone: false
@@ -64,7 +96,39 @@ export function mergeHolidays(target: HolidayMap, incoming: HolidayMap): number 
 	return added;
 }
 
-/** Quick-add modal wired to the "+" button on the featured card. */
+/** Add a personal holiday, keeping the emoji side-map in step. Returns false
+ * when the day already carries that exact label. */
+export async function addHoliday(
+	plugin: ElevenDaysPlugin,
+	mmdd: string,
+	label: string,
+	emoji: string
+): Promise<boolean> {
+	const s = plugin.settings;
+	const bucket = (s.holidays[mmdd] = s.holidays[mmdd] ?? []);
+	if (bucket.includes(label)) return false;
+	bucket.push(label);
+	const glyph = emoji.trim();
+	if (glyph && glyph !== DEFAULT_PERSONAL_EMOJI) s.holidayEmoji[emojiKey(mmdd, label)] = glyph;
+	await plugin.saveSettings();
+	return true;
+}
+
+/** Remove a personal holiday and its emoji together, so a later event reusing
+ * the label cannot inherit a stale glyph. */
+export async function removeHoliday(
+	plugin: ElevenDaysPlugin,
+	mmdd: string,
+	label: string
+): Promise<void> {
+	const s = plugin.settings;
+	s.holidays[mmdd] = (s.holidays[mmdd] ?? []).filter((x) => x !== label);
+	if (s.holidays[mmdd].length === 0) delete s.holidays[mmdd];
+	delete s.holidayEmoji[emojiKey(mmdd, label)];
+	await plugin.saveSettings();
+}
+
+/** Quick-add modal, reachable from the settings tab and from a wheel cell. */
 export class HolidayModal extends Modal {
 	private plugin: ElevenDaysPlugin;
 	private mmdd: string;
@@ -81,26 +145,30 @@ export class HolidayModal extends Modal {
 
 	onOpen(): void {
 		this.titleEl.setText(`Add annual event — ${this.dateLabel}`);
-		const input = this.contentEl.createEl("input", {
-			type: "text",
-			cls: "eleven-days-modal-input"
-		});
+		const row = this.contentEl.createDiv({ cls: "eleven-days-modal-row" });
+
+		const emojiInput = row.createEl("input", { type: "text", cls: "eleven-days-modal-emoji" });
+		emojiInput.setAttribute("value", DEFAULT_PERSONAL_EMOJI);
+		emojiInput.value = DEFAULT_PERSONAL_EMOJI;
+		emojiInput.setAttribute("aria-label", "Emoji for this event");
+		emojiInput.title = "The glyph this event wears on the Wheel of the Year";
+
+		const input = row.createEl("input", { type: "text", cls: "eleven-days-modal-input" });
 		input.placeholder = "Event name (repeats every year)";
 
 		const save = async () => {
 			const label = input.value.trim();
 			if (!label) return;
-			const bucket = (this.plugin.settings.holidays[this.mmdd] =
-				this.plugin.settings.holidays[this.mmdd] ?? []);
-			if (!bucket.includes(label)) bucket.push(label);
-			await this.plugin.saveSettings();
+			await addHoliday(this.plugin, this.mmdd, label, emojiInput.value);
 			this.close();
 			this.onSaved();
 		};
 
-		input.addEventListener("keydown", (e) => {
-			if (e.key === "Enter") void save();
-		});
+		for (const el of [input, emojiInput]) {
+			el.addEventListener("keydown", (e) => {
+				if (e.key === "Enter") void save();
+			});
+		}
 		new Setting(this.contentEl).addButton((btn) =>
 			btn.setButtonText("Save").setCta().onClick(() => void save())
 		);
@@ -202,6 +270,7 @@ export class ElevenDaysSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		const detected = detectDailyConfig(this.app);
+		const detectedWeekly = detectWeeklyConfig(this.app);
 
 		new Setting(containerEl)
 			.setName("Daily-note navigation")
@@ -245,19 +314,38 @@ export class ElevenDaysSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Weekly-note folder")
-			.setDesc("Blank hides the weekly link even when enabled.")
-			.addText((t) => t.setPlaceholder("e.g. Weekly").setValue(s.weeklyFolder).onChange(async (v) => {
+			.setDesc(
+				detectedWeekly.folder
+					? `Blank auto-detects (currently: "${detectedWeekly.folder}").`
+					: "Blank hides the weekly link, unless Periodic Notes reports a weekly folder."
+			)
+			.addText((t) => t.setPlaceholder(detectedWeekly.folder || "e.g. Weekly").setValue(s.weeklyFolder).onChange(async (v) => {
 				s.weeklyFolder = v.trim();
 				await this.plugin.saveSettings();
+				this.plugin.refreshBlocks();
 			}));
 
 		new Setting(containerEl)
 			.setName("Weekly-note format")
-			.setDesc("Moment format for weekly filenames.")
-			.addText((t) => t.setPlaceholder("gggg-[W]ww").setValue(s.weeklyFormat).onChange(async (v) => {
-				s.weeklyFormat = v.trim() || "gggg-[W]ww";
+			.setDesc(
+				detectedWeekly.format
+					? `Moment format for weekly filenames. Blank auto-detects (currently: "${detectedWeekly.format}").`
+					: "Moment format for weekly filenames."
+			)
+			.addText((t) => t.setPlaceholder(detectedWeekly.format || "gggg-[W]ww").setValue(s.weeklyFormat).onChange(async (v) => {
+				s.weeklyFormat = v.trim();
 				await this.plugin.saveSettings();
 			}));
+
+		new Setting(containerEl)
+			.setName("Weekly archive root")
+			.setDesc("Where archived weekly notes live. Blank reuses the daily archive root above.")
+			.addText((t) => t.setPlaceholder("(same as daily)").setValue(s.weeklyArchiveRoot).onChange(async (v) => {
+				s.weeklyArchiveRoot = v.trim();
+				await this.plugin.saveSettings();
+			}));
+
+		new Setting(containerEl).setName("The sky").setHeading();
 
 		new Setting(containerEl)
 			.setName("Moon phase")
@@ -265,7 +353,85 @@ export class ElevenDaysSettingTab extends PluginSettingTab {
 			.addToggle((t) => t.setValue(s.moonEnabled).onChange(async (v) => {
 				s.moonEnabled = v;
 				await this.plugin.saveSettings();
+				this.plugin.refreshBlocks();
 			}));
+
+		new Setting(containerEl)
+			.setName("Zodiac chip")
+			.setDesc(
+				"Show which signs the Sun and Moon occupy, and open the sky panel. " +
+				"Hide it per-block with `sky: false`."
+			)
+			.addToggle((t) => t.setValue(s.skyEnabled).onChange(async (v) => {
+				s.skyEnabled = v;
+				await this.plugin.saveSettings();
+				this.plugin.refreshBlocks();
+			}));
+
+		new Setting(containerEl)
+			.setName("Planets in the sky panel")
+			.setDesc(
+				"Add Mercury through Pluto, with retrograde marks. Positions come from JPL's " +
+				"approximate elements, good to roughly ten arcminutes between 1800 and 2050; " +
+				"outside those years the panel shows the Sun and Moon alone."
+			)
+			.addToggle((t) => t.setValue(s.planetsEnabled).onChange(async (v) => {
+				s.planetsEnabled = v;
+				await this.plugin.saveSettings();
+				this.plugin.refreshBlocks();
+			}));
+
+		new Setting(containerEl)
+			.setName("Lunar points")
+			.setDesc(
+				"Add Black Moon Lilith (⚸, the mean lunar apogee) and the North Node (☊). " +
+				"With the planets on, they round the chart from a 5×2 to a clean 6×2."
+			)
+			.addToggle((t) => t.setValue(s.lunarPointsEnabled).onChange(async (v) => {
+				s.lunarPointsEnabled = v;
+				await this.plugin.saveSettings();
+				this.plugin.refreshBlocks();
+			}));
+
+		new Setting(containerEl).setName("The featured card").setHeading();
+
+		new Setting(containerEl)
+			.setName("Weekday as the title")
+			.setDesc("Lead with Monday…Sunday and drop the date beneath it. Turn off per-block with `weekday: false`.")
+			.addToggle((t) => t.setValue(s.weekdayTitle).onChange(async (v) => {
+				s.weekdayTitle = v;
+				await this.plugin.saveSettings();
+				this.plugin.refreshBlocks();
+			}));
+
+		new Setting(containerEl)
+			.setName("Title emphasis")
+			.setDesc("With the weekday shown, which line reads largest — the date, or the weekday above it. Override per-block with `emphasis: weekday`.")
+			.addDropdown((d) =>
+				d
+					.addOption("date", "Date larger (weekday as a kicker)")
+					.addOption("weekday", "Weekday larger (date beneath)")
+					.setValue(s.titleEmphasis)
+					.onChange(async (v) => {
+						s.titleEmphasis = v as "weekday" | "date";
+						await this.plugin.saveSettings();
+						this.plugin.refreshBlocks();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Featured calendar")
+			.setDesc("Which system leads. The arrows on the card change this too; a fence can pin its own with `featured: thelemic`.")
+			.addDropdown((d) => {
+				for (const key of ALL_CALENDARS) {
+					d.addOption(key, `${EMOJIS[key]} ${CALENDAR_INFO[key].longName}`);
+				}
+				d.setValue(s.featuredCalendar).onChange(async (v) => {
+					s.featuredCalendar = v as CalendarKey;
+					await this.plugin.saveSettings();
+					this.plugin.refreshBlocks();
+				});
+			});
 
 		new Setting(containerEl).setName("Appearance").setHeading();
 
@@ -306,10 +472,14 @@ export class ElevenDaysSettingTab extends PluginSettingTab {
 
 		let newDate = "";
 		let newLabel = "";
+		let newEmoji = DEFAULT_PERSONAL_EMOJI;
 		new Setting(containerEl)
 			.setName("Add a holiday")
 			.addText((t) => t.setPlaceholder("MM-DD (e.g. 07-23)").onChange((v) => (newDate = v.trim())))
 			.addText((t) => t.setPlaceholder("Event name").onChange((v) => (newLabel = v.trim())))
+			.addText((t) =>
+				t.setPlaceholder(DEFAULT_PERSONAL_EMOJI).setValue(DEFAULT_PERSONAL_EMOJI).onChange((v) => (newEmoji = v.trim()))
+			)
 			.addButton((btn) =>
 				btn.setButtonText("Add").setCta().onClick(async () => {
 					if (!MM_DD.test(newDate)) {
@@ -320,9 +490,11 @@ export class ElevenDaysSettingTab extends PluginSettingTab {
 						new Notice("Give the event a name.");
 						return;
 					}
-					const bucket = (s.holidays[newDate] = s.holidays[newDate] ?? []);
-					if (!bucket.includes(newLabel)) bucket.push(newLabel);
-					await this.plugin.saveSettings();
+					if (!(await addHoliday(this.plugin, newDate, newLabel, newEmoji))) {
+						new Notice(`${newDate} already carries "${newLabel}".`);
+						return;
+					}
+					this.plugin.refreshBlocks();
 					this.render();
 				})
 			);
@@ -330,13 +502,25 @@ export class ElevenDaysSettingTab extends PluginSettingTab {
 		const keys = Object.keys(s.holidays).sort();
 		for (const key of keys) {
 			for (const label of [...s.holidays[key]]) {
+				const glyph = s.holidayEmoji[emojiKey(key, label)] || DEFAULT_PERSONAL_EMOJI;
 				new Setting(containerEl)
-					.setName(`${key} — ${label}`)
+					.setName(`${glyph}  ${key} — ${label}`)
+					.addText((t) =>
+						t
+							.setPlaceholder(DEFAULT_PERSONAL_EMOJI)
+							.setValue(glyph)
+							.onChange(async (v) => {
+								const next = v.trim();
+								if (!next || next === DEFAULT_PERSONAL_EMOJI) delete s.holidayEmoji[emojiKey(key, label)];
+								else s.holidayEmoji[emojiKey(key, label)] = next;
+								await this.plugin.saveSettings();
+								this.plugin.refreshBlocks();
+							})
+					)
 					.addButton((btn) =>
 						btn.setIcon("trash").setTooltip("Remove").onClick(async () => {
-							s.holidays[key] = s.holidays[key].filter((x) => x !== label);
-							if (s.holidays[key].length === 0) delete s.holidays[key];
-							await this.plugin.saveSettings();
+							await removeHoliday(this.plugin, key, label);
+							this.plugin.refreshBlocks();
 							this.display();
 						})
 					);

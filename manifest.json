@@ -1,7 +1,7 @@
 {
 	"id": "eleven-days",
 	"name": "Eleven Days",
-	"version": "0.1.3",
+	"version": "0.2.0",
 	"minAppVersion": "1.4.0",
 	"description": "Today across eleven calendar systems — Gregorian plus ten esoteric calendars, with personal annual holidays and archive-aware daily-note navigation. How to live eleven days in twenty-four hours.",
 	"author": "Dyllon Wright",

@@ -95,6 +95,12 @@ export const DISPLAY_ORDER: CalendarKey[] = [
 	"mayan"
 ];
 
+/** Every system, in the order the featured card's arrows cycle them. Gregorian
+ * leads because it stays the default; the rest follow the subgrid cascade, so
+ * stepping down the list walks the same warm-to-cool arc the eye already reads
+ * left to right. */
+export const ALL_CALENDARS: CalendarKey[] = ["gregorian", ...DISPLAY_ORDER];
+
 /** Border/glow accent per system, used when its info panel shows. */
 export const COLOR_MAP: Partial<Record<CalendarKey, string>> = {
 	illuminati: "#d97706",

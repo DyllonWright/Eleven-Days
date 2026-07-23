@@ -334,7 +334,11 @@
     color: var(--text-muted);
     cursor: pointer;
     text-decoration: none;
-    padding: 0 6px;
+    /* Equal, tappable hit areas: as bare glyphs these were as narrow as the
+       character and drifted with the font. */
+    min-width: 24px;
+    padding: 2px 4px;
+    text-align: center;
     border-radius: 4px;
     line-height: 1;
     display: inline-block;
@@ -357,14 +361,13 @@
     background: transparent;
     border: 1px solid color-mix(in srgb, var(--ed-accent, #00b4d8) 30%, transparent);
     color: var(--ed-accent, var(--interactive-accent));
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     font-size: 0.8em;
-    margin-left: 6px;
     cursor: pointer;
     padding: 0;
     line-height: 1;
@@ -775,5 +778,706 @@
 /* Quick-add holiday modal */
 .eleven-days-modal-input {
     width: 100%;
+}
+
+/* ==========================================================================
+   0.2.0 — swap arrows, weekday title, sky panel, Wheel of the Year
+   ========================================================================== */
+
+/* --- Featured left: chevrons + system name + the wheel trigger ----------- */
+.eleven-days-root .featured-swap {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 6px;
+    flex: 0 0 auto;
+}
+
+/* The pair reads as ONE control — a bordered well the two chevrons sit inside —
+   so it stops looking like expand/collapse next to the label and starts looking
+   like a stepper for the calendar it borders. */
+.eleven-days-root .featured-swap {
+    border: 1px solid color-mix(in srgb, var(--ed-accent, #00b4d8) 22%, transparent);
+    border-radius: 4px;
+    padding: 1px 0;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.eleven-days-root .featured-swap:hover {
+    border-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 55%, transparent);
+    background-color: color-mix(in srgb, var(--ed-accent, #00b4d8) 8%, transparent);
+}
+
+.eleven-days-root .featured-swap-btn {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+    width: 20px;
+    height: 13px;
+    display: grid;
+    place-items: center;
+    font-size: 0.8em;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: color 0.12s ease;
+}
+
+.eleven-days-root .featured-swap-btn:hover {
+    color: var(--ed-accent, var(--interactive-accent));
+}
+
+.eleven-days-root .featured-system-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* A non-Gregorian lead earns a solid edge, so the swap reads as deliberate */
+.eleven-days-root .multi-calendar-card.featured-card.is-alt-lead {
+    border-style: solid;
+}
+
+/* --- Featured centre: a two-line title, one line leads ------------------- */
+.eleven-days-root .featured-title-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    gap: 2px;
+}
+
+/* Both lines wear the card's tasteful serif and clip rather than wrap. Which
+   line reads largest rides on the .emphasis-* class the renderer sets from the
+   Title-emphasis setting (or an `emphasis:` fence arg). */
+.eleven-days-root .featured-weekday,
+.eleven-days-root .featured-subdate {
+    font-family: 'EsotericNumbers', 'Georgia', serif;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+/* The hero line — whichever it is — stays big and legible. */
+.eleven-days-root .emphasis-weekday .featured-weekday,
+.eleven-days-root .emphasis-date .featured-subdate {
+    font-size: 1.6em;
+    font-weight: 700;
+    color: var(--text-normal);
+    letter-spacing: 0.01em;
+    font-variant-numeric: tabular-nums;
+}
+
+/* The date, when it rides beneath the weekday: clearly visible, not tiny. */
+.eleven-days-root .emphasis-weekday .featured-subdate {
+    font-size: 0.86em;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+}
+
+/* The weekday, when the date leads: a small uppercase kicker above it. */
+.eleven-days-root .emphasis-date .featured-weekday {
+    font-size: 0.78em;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+/* --- Featured left: an identity block, name over sky --------------------- */
+.eleven-days-root .featured-left {
+    display: grid;
+    grid-template-columns: auto minmax(0, auto) auto;
+    grid-template-areas:
+        "swap name add"
+        "swap shelf shelf";
+    align-items: center;
+    justify-content: start;
+    column-gap: 7px;
+    row-gap: 4px;
+    text-align: left;
+}
+
+.eleven-days-root .featured-swap {
+    grid-area: swap;
+}
+
+.eleven-days-root .featured-system-name {
+    grid-area: name;
+}
+
+.eleven-days-root .add-holiday-btn {
+    grid-area: add;
+}
+
+/* The shelf carries glyphs, not label text, so it drops the left column's
+   uppercase tracking and takes back the size that 0.8em parent took away. */
+.eleven-days-root .featured-shelf {
+    grid-area: shelf;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 7px;
+    min-width: 0;
+    line-height: 1;
+    /* Sits at the name's own size, never above it: the sky supports the
+       identity, it does not outshout it (the parent's 0.8em would otherwise be
+       overridden loud). */
+    font-size: 1em;
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--text-muted);
+}
+
+.eleven-days-root .featured-shelf .featured-moon {
+    margin-top: 0;
+}
+
+/* --- Grid blowout: a long holiday name must not widen its column ---------
+   `1fr` carries an implicit `auto` minimum, so a card whose badge cannot
+   shrink drags the whole column past the viewport (Dec 25's Illuminati feast
+   ran a 2-column phone grid to 393px inside 343px, rescued only by the
+   wrapper's overflow clip). `minmax(0, 1fr)` plus `min-width: 0` is the cure
+   the wrapper's own comment already points at. */
+.eleven-days-root .multi-calendar-subgrid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.eleven-days-root .multi-calendar-card {
+    min-width: 0;
+}
+
+.eleven-days-root .multi-calendar-card .card-holiday-badge {
+    max-width: 100%;
+}
+
+/* An absent weekly note still links (a click starts one) but reads quieter */
+.eleven-days-root .gregorian-week-link.is-unresolved {
+    opacity: 0.62;
+    text-decoration-style: dotted;
+}
+
+/* --- Sun/Moon sign chip -------------------------------------------------- */
+.eleven-days-root .featured-sky-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0 2px;
+    margin: 0;
+    cursor: pointer;
+    font-size: 0.95em;
+    line-height: 1;
+    border-radius: 4px;
+    color: var(--text-muted);
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.eleven-days-root .featured-sky-btn:hover,
+.eleven-days-root .featured-sky-btn.is-active {
+    color: var(--ed-accent, var(--interactive-accent));
+    transform: translateY(-1px);
+}
+
+.eleven-days-root .sky-chip-part {
+    white-space: nowrap;
+}
+
+/* --- Rare-event flag: one glyph beside the sky chip ---------------------- */
+.eleven-days-root .featured-rare-btn {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0 1px;
+    margin: 0;
+    cursor: pointer;
+    font-size: 1em;
+    line-height: 1;
+    border-radius: 4px;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--ed-accent, #00b4d8) 45%, transparent));
+}
+
+.eleven-days-root .featured-rare-btn:hover,
+.eleven-days-root .featured-rare-btn.is-active {
+    transform: translateY(-1px) scale(1.08);
+    filter: drop-shadow(0 0 7px color-mix(in srgb, var(--ed-accent, #00b4d8) 65%, transparent));
+}
+
+/* ℞ is type, not emoji: paint it the accent so a station reads as a mark, not
+   a stray letter that wandered into the shelf. */
+.eleven-days-root .featured-rare-btn.is-station {
+    color: var(--ed-accent, var(--interactive-accent));
+    font-weight: 700;
+    filter: none;
+}
+
+/* --- Sky panel ----------------------------------------------------------- */
+.eleven-days-root .featured-sky-panel {
+    display: none;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0 0 8px 0;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--ed-accent, #00b4d8) 5%, var(--background-secondary, #10121a));
+    border: 1px solid color-mix(in srgb, var(--ed-accent, #00b4d8) 28%, transparent);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+    animation: fadeIn 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.eleven-days-root .featured-sky-panel.is-open {
+    display: block;
+}
+
+/* Notable strip: the day's rare events, spelled out above the body list. */
+.eleven-days-root .sky-panel-notable {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 11px;
+    padding-bottom: 11px;
+    border-bottom: 1px solid color-mix(in srgb, var(--ed-accent, #00b4d8) 22%, transparent);
+}
+
+.eleven-days-root .sky-notable-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: baseline;
+    gap: 9px;
+}
+
+.eleven-days-root .sky-notable-emoji {
+    font-size: 1.1em;
+    line-height: 1;
+}
+
+.eleven-days-root .sky-notable-row.is-station .sky-notable-emoji {
+    color: var(--ed-accent, var(--interactive-accent));
+    font-weight: 700;
+}
+
+.eleven-days-root .sky-notable-name {
+    font-size: 0.82em;
+    font-weight: 700;
+    color: var(--text-normal);
+}
+
+.eleven-days-root .sky-notable-detail {
+    font-size: 0.74em;
+    color: var(--text-muted);
+    line-height: 1.3;
+    margin-top: 1px;
+}
+
+.eleven-days-root .sky-panel-bodies {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3px 22px;
+}
+
+.eleven-days-root .sky-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+    padding: 2px 0;
+}
+
+.eleven-days-root .sky-glyph {
+    font-size: 1.05em;
+    line-height: 1;
+    color: var(--text-normal);
+}
+
+/* The four elements, tinted the classical way */
+.eleven-days-root .sky-row.is-fire .sky-glyph { color: #e2603f; }
+.eleven-days-root .sky-row.is-earth .sky-glyph { color: #7fa04a; }
+.eleven-days-root .sky-row.is-air .sky-glyph { color: #6fa8dc; }
+.eleven-days-root .sky-row.is-water .sky-glyph { color: #7b8fe0; }
+
+.eleven-days-root .sky-name {
+    font-size: 0.8em;
+    font-weight: 600;
+    color: var(--text-normal);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.eleven-days-root .sky-pos {
+    font-size: 0.78em;
+    color: var(--text-normal);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.eleven-days-root .sky-sign {
+    font-size: 0.72em;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.eleven-days-root .sky-motion {
+    font-size: 0.72em;
+    text-align: right;
+    white-space: nowrap;
+    min-width: 1.2em;
+}
+
+.eleven-days-root .sky-motion.is-retrograde {
+    color: #e0555f;
+    font-weight: 700;
+}
+
+.eleven-days-root .sky-motion.is-stationary {
+    color: var(--text-faint);
+    font-style: italic;
+}
+
+.eleven-days-root .sky-panel-note {
+    margin-top: 8px;
+    font-size: 0.72em;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* --- Wheel of the Year --------------------------------------------------- */
+.eleven-days-root .featured-wheel-panel {
+    display: none;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0 0 8px 0;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--ed-accent, #00b4d8) 5%, var(--background-secondary, #10121a));
+    border: 1px solid color-mix(in srgb, var(--ed-accent, #00b4d8) 28%, transparent);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+    animation: fadeIn 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.eleven-days-root .featured-wheel-panel.is-open {
+    display: block;
+}
+
+.eleven-days-root .wheel-head {
+    margin-bottom: 10px;
+}
+
+.eleven-days-root .wheel-title {
+    font-size: 0.9em;
+    font-weight: 700;
+    color: var(--text-normal);
+    letter-spacing: 0.04em;
+}
+
+.eleven-days-root .wheel-subtitle {
+    font-size: 0.72em;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 1px;
+}
+
+/* 12 rows of 31, plus a month gutter. Scrolls sideways when the viewport
+   cannot hold 31 columns at a legible size. */
+.eleven-days-root .wheel-grid {
+    display: grid;
+    grid-template-columns: auto repeat(31, minmax(13px, 1fr));
+    gap: 2px;
+    align-items: center;
+    overflow-x: auto;
+    /* Setting overflow on one axis makes the other compute to `auto` too, so
+       this box clips vertically as well as horizontally. A hovered cell grows
+       1.28x and its glow reaches further still, both of which would be sheared
+       off at the edge rows and columns without this breathing room. */
+    padding: 5px;
+}
+
+.eleven-days-root .wheel-month-label {
+    font-size: 0.64em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-right: 6px;
+    text-align: right;
+    white-space: nowrap;
+    position: sticky;
+    left: 0;
+    background: var(--background-secondary, #10121a);
+    z-index: 1;
+}
+
+.eleven-days-root .wheel-cell {
+    aspect-ratio: 1 / 1;
+    min-width: 13px;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--text-faint) 12%, transparent);
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    cursor: pointer;
+    font-size: 0.6em;
+    line-height: 1;
+    overflow: hidden;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+}
+
+.eleven-days-root .wheel-cell.is-void {
+    background: transparent;
+    cursor: default;
+    pointer-events: none;
+}
+
+.eleven-days-root .wheel-cell.has-holiday {
+    background: color-mix(in srgb, var(--cell-accent, var(--ed-accent)) 26%, transparent);
+    border-color: color-mix(in srgb, var(--cell-accent, var(--ed-accent)) 55%, transparent);
+}
+
+.eleven-days-root .wheel-cell.is-pair {
+    font-size: 0.45em;
+}
+
+.eleven-days-root .wheel-cell.is-crowded .wheel-more {
+    font-size: 1.4em;
+    font-weight: 700;
+    color: var(--cell-accent, var(--ed-accent));
+    letter-spacing: -0.05em;
+}
+
+/* A dense grid does not want a 1.28x pop, and a scroll container clips one at
+   the edges however much gutter it gets. A small lift plus a ring reads clearly
+   and stays well inside the 5px above. */
+.eleven-days-root .wheel-cell:hover:not(.is-void) {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 1px var(--cell-accent, var(--ed-accent)), 0 1px 5px var(--cell-glow, rgba(0, 0, 0, 0.3));
+    z-index: 2;
+}
+
+.eleven-days-root .wheel-cell.is-today {
+    box-shadow: 0 0 0 2px var(--ed-accent, var(--interactive-accent));
+}
+
+.eleven-days-root .wheel-cell.is-selected {
+    outline: 2px solid var(--text-normal);
+    outline-offset: 1px;
+}
+
+/* --- Wheel detail strip --------------------------------------------------- */
+.eleven-days-root .wheel-detail {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid color-mix(in srgb, var(--ed-accent, #00b4d8) 20%, transparent);
+}
+
+.eleven-days-root .wheel-detail-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.eleven-days-root .wheel-detail-date {
+    font-size: 0.85em;
+    font-weight: 700;
+    color: var(--text-normal);
+}
+
+.eleven-days-root .wheel-detail-count {
+    font-size: 0.72em;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.eleven-days-root .wheel-detail-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 128px;
+    overflow-y: auto;
+}
+
+.eleven-days-root .wheel-detail-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 9px;
+    /* The emoji glyph's ink descends ~2px past its line box; without this the
+       list's scrollHeight always beats its clientHeight and a scrollbar nub
+       shows even for a single event. The label already ellipsizes, so a row has
+       nothing to legitimately overflow. */
+    overflow: hidden;
+}
+
+.eleven-days-root .wheel-detail-emoji {
+    font-size: 1em;
+    line-height: 1;
+}
+
+.eleven-days-root .wheel-detail-mid {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.eleven-days-root .wheel-detail-label {
+    font-size: 0.78em;
+    color: var(--text-normal);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.eleven-days-root .wheel-detail-row.is-personal .wheel-detail-label {
+    font-weight: 700;
+}
+
+.eleven-days-root .wheel-detail-source {
+    font-size: 0.68em;
+    color: var(--text-muted);
+    white-space: nowrap;
+    flex: 0 0 auto;
+}
+
+.eleven-days-root .wheel-detail-del {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    font-size: 0.95em;
+    line-height: 1;
+    padding: 0 4px;
+}
+
+.eleven-days-root .wheel-detail-del:hover {
+    color: var(--text-error, #e0555f);
+}
+
+.eleven-days-root .wheel-add {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 9px;
+}
+
+.eleven-days-root .wheel-add-emoji {
+    width: 2.6em;
+    text-align: center;
+    flex: 0 0 auto;
+    font-size: 0.82em;
+    padding: 3px 4px;
+}
+
+.eleven-days-root .wheel-add-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 0.82em;
+    padding: 3px 7px;
+}
+
+.eleven-days-root .wheel-add-label.is-duplicate {
+    border-color: var(--text-error, #e0555f);
+}
+
+.eleven-days-root .wheel-add-save {
+    flex: 0 0 auto;
+    font-size: 0.78em;
+    padding: 3px 11px;
+    cursor: pointer;
+}
+
+/* --- Quick-add modal row -------------------------------------------------- */
+.eleven-days-modal-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.eleven-days-modal-emoji {
+    width: 3em;
+    text-align: center;
+    flex: 0 0 auto;
+}
+
+.eleven-days-modal-row .eleven-days-modal-input {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* ==========================================================================
+   Responsive — the featured card carries more furniture than it did in 0.1
+   ========================================================================== */
+
+@media (max-width: 680px) {
+    /* Taller wrapper: the card now stacks a weekday over a date */
+    .multi-calendar-main-wrapper {
+        min-height: 500px;
+        contain-intrinsic-size: auto 500px;
+    }
+
+    /* Same blowout cure at the two-column breakpoint, where it bites hardest */
+    .eleven-days-root .multi-calendar-subgrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* One column of bodies rather than two */
+    .eleven-days-root .sky-panel-bodies {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* 31 legible columns do not fit a phone: scroll the grid instead of
+       shrinking cells past the point where a glyph reads */
+    .eleven-days-root .wheel-grid {
+        grid-template-columns: auto repeat(31, 16px);
+    }
+}
+
+@media (max-width: 480px) {
+    .multi-calendar-main-wrapper {
+        min-height: 560px;
+        contain-intrinsic-size: auto 560px;
+    }
+
+    /* The shelf centres under the stacked columns like everything else */
+    .eleven-days-root .featured-shelf {
+        justify-content: center;
+    }
+
+    .eleven-days-root .featured-left,
+    .eleven-days-root .featured-left-top {
+        justify-content: center;
+    }
+
+    .eleven-days-root .featured-subdate {
+        font-size: 0.7em;
+        white-space: normal;
+    }
+
+    .eleven-days-root .wheel-detail-list {
+        max-height: 96px;
+    }
+
+    /* Emoji + name + button will not share a line at this width */
+    .eleven-days-root .wheel-add {
+        flex-wrap: wrap;
+    }
+
+    .eleven-days-root .wheel-add-label {
+        flex: 1 1 60%;
+    }
 }
 

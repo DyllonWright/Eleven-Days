@@ -18,7 +18,7 @@ interface PeriodicNotesDaily extends DailyNoteOptions {
 }
 
 interface PeriodicNotesPlugin {
-	settings?: { daily?: PeriodicNotesDaily };
+	settings?: { daily?: PeriodicNotesDaily; weekly?: PeriodicNotesDaily };
 }
 
 interface InternalPlugin {
@@ -67,6 +67,41 @@ export function effectiveDailyConfig(app: App, settings: ElevenDaysSettings): Da
 	};
 }
 
+/** Weekly notes from Periodic Notes, when it manages them. Obsidian exposes no
+ * public API for another plugin's settings, so every hop stays optional and the
+ * whole read sits behind a try/catch: a shape change upstream must degrade to
+ * "not detected", never throw inside a render. */
+export function detectWeeklyConfig(app: App): DailyConfig {
+	try {
+		const internals = app as unknown as AppInternals;
+		const periodic = internals.plugins?.getPlugin("periodic-notes") as
+			| PeriodicNotesPlugin
+			| null
+			| undefined;
+		const weekly = periodic?.settings?.weekly;
+		if (weekly?.enabled && (weekly.folder || weekly.format)) {
+			return {
+				folder: (weekly.folder ?? "").trim(),
+				format: (weekly.format || "gggg-[W]ww").trim()
+			};
+		}
+	} catch (e) {
+		console.warn("Eleven Days: could not read Periodic Notes weekly settings", e);
+	}
+	return { folder: "", format: "" };
+}
+
+/** Weekly config after settings override detection. An empty folder still means
+ * "hide the link" — but detection can now supply that folder, so callers must
+ * test THIS folder rather than the raw setting. */
+export function effectiveWeeklyConfig(app: App, settings: ElevenDaysSettings): DailyConfig {
+	const detected = detectWeeklyConfig(app);
+	return {
+		folder: settings.weeklyFolder.trim() || detected.folder,
+		format: settings.weeklyFormat.trim() || detected.format || "gggg-[W]ww"
+	};
+}
+
 export interface Resolution {
 	/** The existing note for the target date, when one exists anywhere we look. */
 	file: TFile | null;
@@ -77,17 +112,8 @@ export interface Resolution {
 const under = (path: string, root: string): boolean =>
 	!!root && (path === root || path.startsWith(root + "/"));
 
-/** Find the daily note for a target date by its FILENAME, not a fixed path.
- *
- * Order: (1) the current note's own folder — the everything-in-one-dir case;
- * (2) direction-aware fallback: a note already inside the archive checks the
- * archive (recursively) before the live folder, any other note checks the
- * live folder before the archive. When nothing exists, `createPath` points
- * at the live folder so a click creates the note where new days belong.
- *
- * @param targetRel  The target date already formatted with the daily format
- *                   (may contain subfolders when the format does).
- */
+/** Daily-note flavour of {@link resolvePeriodicNote}, kept as the name the
+ * render path already calls. */
 export function resolveDateNote(
 	app: App,
 	settings: ElevenDaysSettings,
@@ -95,11 +121,46 @@ export function resolveDateNote(
 	targetRel: string,
 	dailyFolder: string
 ): Resolution {
+	return resolvePeriodicNote(app, {
+		sourcePath,
+		targetRel,
+		liveFolder: dailyFolder,
+		archiveRoot: settings.archiveRoot
+	});
+}
+
+export interface PeriodicLookup {
+	/** Note the click started from — its own folder gets checked first. */
+	sourcePath: string;
+	/** Target date already formatted (may contain subfolders when the format does). */
+	targetRel: string;
+	/** Folder where live notes of this period belong. */
+	liveFolder: string;
+	/** Folder (with all subfolders) holding archived notes of this period. */
+	archiveRoot: string;
+}
+
+/** Find a periodic note — daily, weekly, any cadence — by its FILENAME rather
+ * than a fixed path, so archiving a note into nested subfolders never breaks
+ * traversal.
+ *
+ * Order: (1) the current note's own folder — the everything-in-one-dir case;
+ * (2) direction-aware fallback: a note already inside the archive checks the
+ * archive (recursively) before the live folder, any other note checks the
+ * live folder before the archive. When nothing exists, `createPath` points
+ * at the live folder so a click creates the note where new ones belong.
+ *
+ * Ambiguity rule: when several files share the basename under one root, the
+ * lowest path in lexical order wins. Deterministic beats clever — a weekly
+ * format that collides across years (say "[W]ww" with no year) would otherwise
+ * pick a different note run to run. */
+export function resolvePeriodicNote(app: App, lookup: PeriodicLookup): Resolution {
+	const { sourcePath, targetRel, liveFolder, archiveRoot } = lookup;
 	const segments = targetRel.split("/");
 	const basename = segments[segments.length - 1];
-	const liveRoot = dailyFolder ? normalizePath(dailyFolder) : "";
+	const liveRoot = liveFolder ? normalizePath(liveFolder) : "";
 	const livePath = normalizePath((liveRoot ? liveRoot + "/" : "") + targetRel + ".md");
-	const archive = settings.archiveRoot.trim() ? normalizePath(settings.archiveRoot.trim()) : "";
+	const archive = archiveRoot.trim() ? normalizePath(archiveRoot.trim()) : "";
 
 	const asFile = (p: string): TFile | null => {
 		const f = app.vault.getAbstractFileByPath(normalizePath(p));
