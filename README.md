@@ -199,6 +199,18 @@ npm test        # engine + sky + rare-event regression suite — keep it green
 
 `src/engine.js` holds the calendar math and ports verbatim from its verified original; treat it as read-only unless you extend the test suite first.
 
+## Buy me a coffee (or, uh, a bitcoin?)
+
+No tip jar popup, no subscription, no guilting you into buying me a coffee. My hobby projects cost nothing. They always will. But I do take magic internet money :3
+
+| Coin | Address |
+| --- | --- |
+| ☕ Bitcoin (BTC) | `bc1qk69hgdnqchv0kjcwv2t9pdlj8ngxllp2pevgxr` |
+| 🍵 Ethereum (ETH) | `0x0Bee36423cE9D7c8c8349d56a17a6e90eB691221` |
+| 🥤 Solana (SOL) | `esDXQ53bVfKtq6iWknyABBu5KSApCsUGA4nCWNGNUQ8` |
+
+Copy an address from this page only, and compare the first and last characters before sending.
+
 ## License
 
 MIT
